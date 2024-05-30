@@ -7,7 +7,7 @@ import (
 	"runtime"
 )
 
-const NMAX int = 100
+const NMAX int = 80
 
 type text struct {
 	textID      int
@@ -175,7 +175,7 @@ func menu_admin_views() {
 	fmt.Println("|~~~|-------------------------------------------|~~~|")
 }
 
-func menu_admin_views_daftar_akun() {
+func menu_admin_views_daftar_akun_sort(dataAkun accounts) {
 	fmt.Println("|~~~|-----------------Menu Admin----------------|~~~|")
 	fmt.Println("|~~~| Daftar Akun                               |~~~|")
 	if nDataAkun == 0 {
@@ -187,22 +187,6 @@ func menu_admin_views_daftar_akun() {
 			fmt.Printf("%15s %6s %s\n", "Username", ":", dataAkun[i].uname)
 			fmt.Printf("%15s %6s %s\n", "Gender", ":", dataAkun[i].gender)
 			fmt.Printf("%15s %6s %d\n", "Umur", ":", dataAkun[i].umur)
-			fmt.Printf("%15s %6s %s\n", "Password", ":", dataAkun[i].pass)
-		}
-	}
-	fmt.Println("|~~~|-------------------------------------------|~~~|")
-}
-
-func menu_admin_views_daftar_akun_sort(dataAkun accounts) {
-	fmt.Println("|~~~|-----------------Menu Admin----------------|~~~|")
-	fmt.Println("|~~~| Daftar Akun                               |~~~|")
-	if nDataAkun == 0 {
-		fmt.Println("|~~~| Belum ada akun.                           |~~~|")
-	} else {
-		for i := 0; i < nDataAkun; i++ {
-			fmt.Printf("%15s %d\n", "~~ Akun ", i+1)
-			fmt.Printf("%15s %6s %s\n", "Nama", ":", dataAkun[i].name)
-			fmt.Printf("%15s %6s %s\n", "Username", ":", dataAkun[i].uname)
 			fmt.Printf("%15s %6s %s\n", "Password", ":", dataAkun[i].pass)
 		}
 	}
@@ -239,13 +223,16 @@ func menu_home_views() {
 func menu_chat_views(idxAkunDipakai int) {
 	var tampilAkunUname string
 
+	var chatCopy [NMAX]chat = dataAkun[idxAkunDipakai].chatData
+	sortChat(&chatCopy, dataAkun[idxAkunDipakai].nChat)
+
 	fmt.Println("|~~~|-----------------Menu Chat-----------------|~~~|")
 	fmt.Println("|~~~| Daftar Chat                               |~~~|")
 	if dataAkun[idxAkunDipakai].nChat == 0 {
 		fmt.Println("|~~~| Belum ada chat.                           |~~~|")
 	} else {
 		for i := 0; i < dataAkun[idxAkunDipakai].nChat; i++ {
-			tampilAkunUname = dataAkun[idxAkunDipakai].chatData[i].receiverUname
+			tampilAkunUname = chatCopy[i].receiverUname
 			fmt.Printf("%6d", i+1)
 			fmt.Print(". ", tampilAkunUname, "\n")
 		}
@@ -408,7 +395,7 @@ func menu_admin() {
 
 	if input == "1" {
 		clearScreen()
-		menu_admin_daftar_akun()
+		menu_admin_daftar_akun(dataAkun)
 	} else if input == "2" {
 		clearScreen()
 		menu_admin_daftar_akun_pending()
@@ -418,13 +405,13 @@ func menu_admin() {
 	}
 }
 
-func menu_admin_daftar_akun() {
+func menu_admin_daftar_akun(dataAkunCopy accounts) {
 	var input, uname string
 	var idxAkun int
-	var dataAkunCopy accounts
 
-	menu_admin_views_daftar_akun()
-	fmt.Println("Pilihan: 1. Hapus Akun, 2. Sort Akun (nama), 3. Sort Akun (umur), 4. Sort Akun (gender), 5. Kembali")
+	clearScreen()
+	menu_admin_views_daftar_akun_sort(dataAkunCopy)
+	fmt.Println("Pilihan: 1. Hapus Akun, 2. Sort Akun (username), 3. Sort Akun (umur), 4. Sort Akun (gender), 5. Kembali")
 	fmt.Print("Pilih (1/2/3/4/5): ")
 	fmt.Scan(&input)
 
@@ -441,44 +428,31 @@ func menu_admin_daftar_akun() {
 		if idxAkun != -1 {
 			clearScreen()
 			fmt.Println("Akun", dataAkun[idxAkun].name, "berhasil dihapus.")
-			hapusAkun(&dataAkun, &nDataAkun, dataAkunPending[idxAkun].uname)
-			menu_admin_daftar_akun()
+			hapusAkun(&dataAkun, &nDataAkun, dataAkun[idxAkun].uname)
+			menu_admin_daftar_akun(dataAkun)
 		} else {
 			clearScreen()
 			fmt.Println("Username tidak ditemukan, silahkan input kembali.")
-			menu_admin_daftar_akun()
+			menu_admin_daftar_akun(dataAkunCopy)
 		}
 	} else if input == "2" {
-		clearScreen()
 		dataAkunCopy = dataAkun
 		sortAkunByUname(&dataAkunCopy, nDataAkun)
-		menu_admin_daftar_akun_sort(dataAkunCopy)
+		clearScreen()
+		menu_admin_daftar_akun(dataAkunCopy)
 	} else if input == "3" {
-		// Sorting akun berdasarkan umur
+		dataAkunCopy = dataAkun
+		sortAkunByAge(&dataAkunCopy, nDataAkun)
+		clearScreen()
+		menu_admin_daftar_akun(dataAkunCopy)
 	} else if input == "4" {
-		// Sorting akun berdasarkan gender
+		dataAkunCopy = dataAkun
+		sortAkunByGender(&dataAkunCopy, nDataAkun)
+		clearScreen()
+		menu_admin_daftar_akun(dataAkunCopy)
 	} else {
 		clearScreen()
 		menu_admin()
-	}
-}
-
-func menu_admin_daftar_akun_sort(dataAkunCopy accounts) {
-	var input string
-
-	menu_admin_views_daftar_akun_sort(dataAkunCopy)
-	fmt.Println("Pilihan: 1. Kembali")
-	fmt.Print("Pilih (1): ")
-	fmt.Scan(&input)
-
-	for input != "1"  {
-		fmt.Println("Masukkan salah, silahkan input kembali.")
-		fmt.Print("Pilih (1): ")
-		fmt.Scan(&input)
-	}
-	if input == "1" {
-		clearScreen()
-		menu_admin_daftar_akun()
 	}
 }
 
@@ -1394,7 +1368,7 @@ func hapusPesanGrup(grupIdx, pesanGrupID int) {
 	dataGrup[grupIdx].nGroupText--
 }
 
-// Fungsi Insertion Sort untuk mengurutkan akun berdasarkan nama
+// Fungsi Insertion Sort untuk mengurutkan akun berdasarkan username
 func sortAkunByUname(data *accounts, nData int) {
 	var i, j int
 	var key account
@@ -1410,6 +1384,58 @@ func sortAkunByUname(data *accounts, nData int) {
 	}
 }
 
+// Fungsi selection sort untuk mengurutkan akun berdasarkan umur
+func sortAkunByAge(data *accounts, nData int) {
+	var idxMin, j int
+	for i := 0; i < nData; i++ {
+		j = i
+		idxMin = i
+		for j < nData {
+			if data[idxMin].umur > data[j].umur {
+				idxMin = j
+			}
+			j++
+		}
+		data[j] = data[idxMin]
+	}
+}
+
+// Fungsi untuk mengurutkan akun berdasarkan gender
+func sortAkunByGender(data *accounts, nData int) {
+    var i, j, minIdx int
+    var temp account
+
+    for i = 0; i < nData-1; i++ {
+        minIdx = i
+        for j = i + 1; j < nData; j++ {
+            if data[j].gender < data[minIdx].gender {
+                minIdx = j
+            }
+        }
+        temp = data[minIdx]
+        data[minIdx] = data[i]
+        data[i] = temp
+    }
+}
+
+// Fungsi untuk mengurutkan chat berdasarkan username
+func sortChat(chatData *[NMAX]chat, nChat int) {
+	var i, j, minIdx int
+	var temp chat
+
+	for i = 0; i < nChat-1; i++ {
+		minIdx = i
+		for j = i + 1; j < nChat; j++ {
+			if chatData[j].receiverUname < chatData[minIdx].receiverUname {
+				minIdx = j
+			}
+		}
+		temp = chatData[minIdx]
+		chatData[minIdx] = chatData[i]
+		chatData[i] = temp
+	}
+}
+
 func clearScreen() {
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows" {
@@ -1417,7 +1443,7 @@ func clearScreen() {
 	} else if runtime.GOOS == "linux" || runtime.GOOS == "darwin"{
 		cmd = exec.Command("clear")
 	} else {
-		fmt.Println("Unsupported platform")
+		fmt.Println("Platform tidak didukung.")
 		return
 	}
 	cmd.Stdout = os.Stdout
