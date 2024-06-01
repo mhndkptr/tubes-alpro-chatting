@@ -49,6 +49,9 @@ func main() {
 
 // Tampilan Menu
 func menu_welcome_views() {
+	/* IS: -
+	   FS: Tercetak menu welcome
+	*/
 	fmt.Println("|~~~|-------------------------------------------|~~~|")
 	fmt.Println("|~~~|             Aplikasi Chatting             |~~~|")
 	fmt.Println("|~~~|    Created by Muhammad Hendika Putra &    |~~~|")
@@ -58,6 +61,9 @@ func menu_welcome_views() {
 }
 
 func menu_utama_views() {
+	/* IS: -
+	   FS: Tercetak menu utama
+	*/
 	fmt.Println("|~~~|----------------Menu Utama-----------------|~~~|")
 	fmt.Println("|~~~| 1. Registrasi                             |~~~|")
 	fmt.Println("|~~~| 2. Login                                  |~~~|")
@@ -67,6 +73,9 @@ func menu_utama_views() {
 }
 
 func menu_registrasi_views() {
+	/* IS: -
+	   FS: Tercetak menu registrasi dan jika data yang di masukkan valid dan menyetujui pembuatan akun maka akun berhasil di registrasi dan masuk ke daftar pending.
+	*/
 	var name, uname, pass, gender string
 	var umur int
 	var input string
@@ -127,6 +136,9 @@ func menu_registrasi_views() {
 }
 
 func menu_login_views() {
+	/* IS: -
+	   FS: Tercetak menu login dan Pengguna mengisi username dan password, jika valid maka akan login dan masuk ke menu home, jika tidak maka kembali ke menu utama.
+	*/
 	var uname, pass string
 	var input string
 	var idxAkunDipakai int
@@ -168,6 +180,9 @@ func menu_login_views() {
 }
 
 func menu_admin_views() {
+	/* IS: -
+	   FS: Tercetak menu admin
+	*/
 	fmt.Println("|~~~|-----------------Menu Admin----------------|~~~|")
 	fmt.Println("|~~~| 1. Daftar Akun                            |~~~|")
 	fmt.Println("|~~~| 2. Daftar Registrasi Akun                 |~~~|")
@@ -176,6 +191,10 @@ func menu_admin_views() {
 }
 
 func menu_admin_views_daftar_akun_sort(dataAkun accounts) {
+	/* IS: Variabel dataAkun terdefinisi dan berisi daftar akun yang telah disetujui.
+		   Variabel nDataAkun terdefinisi dan berisi jumlah akun yang telah disetujui.
+	   FS: Tercetak daftar akun yang telah disetujui.
+	*/
 	fmt.Println("|~~~|-----------------Menu Admin----------------|~~~|")
 	fmt.Println("|~~~| Daftar Akun                               |~~~|")
 	if nDataAkun == 0 {
@@ -194,6 +213,10 @@ func menu_admin_views_daftar_akun_sort(dataAkun accounts) {
 }
 
 func menu_admin_views_daftar_akun_pending() {
+	/* IS: Variabel dataAkunPending terdefinisi dan berisi daftar akun yang belum disetujui.
+	       Variabel nDataAkunPending terdefinisi dan berisi jumlah akun yang belum disetujui.
+	   FS: Tercetak daftar akun yang belum disetujui.
+	*/
 	fmt.Println("|~~~|-----------------Menu Admin----------------|~~~|")
 	fmt.Println("|~~~| Daftar Registrasi Akun                    |~~~|")
 	if nDataAkunPending == 0 {
@@ -212,6 +235,9 @@ func menu_admin_views_daftar_akun_pending() {
 }
 
 func menu_home_views() {
+	/* IS: -
+	   FS: Tercetak menu home.
+	*/
 	fmt.Println("|~~~|-----------------Menu Home-----------------|~~~|")
 	fmt.Println("|~~~| 1. Chat                                   |~~~|")
 	fmt.Println("|~~~| 2. Grup                                   |~~~|")
@@ -221,6 +247,9 @@ func menu_home_views() {
 }
 
 func menu_chat_views(idxAkunDipakai int) {
+	/* IS: Terdefinisi index dari akun yang akan ditampilkan chatnya.
+	   FS: Tercetak daftar chat pada akun dengan index idxAkunDipakai.
+	*/
 	var tampilAkunUname string
 
 	var chatCopy [NMAX]chat = dataAkun[idxAkunDipakai].chatData
@@ -241,6 +270,9 @@ func menu_chat_views(idxAkunDipakai int) {
 }
 
 func menu_pesan_views(onChat chat) {
+	/* IS: Terdefinisi chat.
+	   FS: Tercetak semua pesan yang berisi pada onChat.
+	*/
 	var onChatReceiverIdx int
 	onChatReceiverIdx = searchAkunIdx(dataAkun, nDataAkun, onChat.receiverUname)
 
@@ -264,6 +296,9 @@ func menu_pesan_views(onChat chat) {
 }
 
 func menu_grup_views(idxAkunDipakai int) {
+	/* IS: Terdefinisi index dari akun yang akan ditampilkan grupnya.
+	   FS: Tercetak daftar grup pada akun dengan index idxAkunDipakai.
+	*/
 	fmt.Println("|~~~|-----------------Menu Grup-----------------|~~~|")
 	fmt.Println("|~~~| Daftar Grup                               |~~~|")
 	if dataAkun[idxAkunDipakai].nGroup == 0 {
@@ -278,7 +313,9 @@ func menu_grup_views(idxAkunDipakai int) {
 }
 
 func menu_grup_chat_views(onGrup group, thisAccUname string) {
-
+	/* IS: Terdefinisi grup(onGrup) dan username akun yang sedang dipakai (thisAccUname).
+	   FS: Tercetak semua pesan yang berisi pada onGrup.
+	*/
 	fmt.Println("|~~~|--------------Menu Grup Pesan--------------|~~~|")
 	fmt.Printf("%15s Chat\n", onGrup.grupName)
 	for i := 0; i < onGrup.nGroupText; i++ {
@@ -295,6 +332,9 @@ func menu_grup_chat_views(onGrup group, thisAccUname string) {
 }
 
 func menu_grup_chat_setting_views(grupIdx int) {
+	/* IS: Terdefinisi index grup (grupIdx) setting.
+	   FS: Tercetak menu grup.
+	*/
 	fmt.Printf("%15s %s\n", "~~ Grup ", dataGrup[grupIdx].grupName)
 	fmt.Println("|~~~|--------Menu Info & Pengaturan Grup--------|~~~|")
 	fmt.Println("|~~~| 1. Ubah Nama Grup                         |~~~|")
@@ -305,6 +345,9 @@ func menu_grup_chat_setting_views(grupIdx int) {
 }
 
 func menu_grup_chat_setting_member_views(grupIdx int) {
+	/* IS: Terdefinisi index grup (grupIdx) setting.
+	   FS: Tercetak anggota grup dengan index grupIdx.
+	*/
 	fmt.Println("|~~~|----------------Anggota Grup---------------|~~~|")
 	for i := 0; i < dataGrup[grupIdx].nMember; i++ {
 		fmt.Printf("%15d %s\n", i+1, dataAkun[searchAkunIdx(dataAkun, nDataAkun, dataGrup[grupIdx].memberUname[i])].name)
@@ -314,6 +357,9 @@ func menu_grup_chat_setting_member_views(grupIdx int) {
 }
 
 func menu_home_setting_akun_views(idxAkunDipakai int) {
+	/* IS: Terdefinisi index dari akun (idxAkunDipakai).
+	   FS: Tercetak menu pengaturan akun dan data pada akun.
+	*/
 	var passHidden string
 	fmt.Println("|~~~|---------------Pengaturan Akun-------------|~~~|")
 	fmt.Println("|~~~|---------------Informasi Akun--------------|~~~|")
@@ -332,8 +378,10 @@ func menu_home_setting_akun_views(idxAkunDipakai int) {
 	fmt.Println("|~~~|-------------------------------------------|~~~|")
 }
 
-// Controller Menu
 func menu_welcome() {
+	/* IS: -
+	   FS: Tercetak menu welcome, jika user menyetujui maka akan masuk ke menu utama.
+	*/
 	var input string
 	menu_welcome_views()
 	fmt.Print("\n\nPress (Y/N) to continue...")
@@ -349,6 +397,9 @@ func menu_welcome() {
 }
 
 func menu_utama() {
+	/* IS: -.
+	   FS: Tercetak menu utama.
+	*/
 	var input string
 	
 	menu_welcome_views()
@@ -373,14 +424,19 @@ func menu_utama() {
 }
 
 func menu_registrasi() {
+	// Menampilkan menu refistrasi views
 	menu_registrasi_views()
 }
 
 func menu_login() {
+	// Menampilkan menu login views
 	menu_login_views()
 }
 
 func menu_admin() {
+	/* IS: -
+ 	   FS: Tercetak menu admin.
+	*/
 	var input string
 	
 	menu_admin_views()
@@ -406,6 +462,9 @@ func menu_admin() {
 }
 
 func menu_admin_daftar_akun(dataAkunCopy accounts) {
+	/* IS: Terdefinisi dataAkunCopy.
+	   FS: Tercetak menu admin daftar akun.
+	*/
 	var input, uname string
 	var idxAkun int
 
@@ -457,6 +516,9 @@ func menu_admin_daftar_akun(dataAkunCopy accounts) {
 }
 
 func menu_admin_daftar_akun_pending() {
+	/* IS: -
+	   FS: Tercetak menu admin daftar akun pending.
+	*/
 	var input, uname string
 	var idxAkun int
 	
@@ -509,6 +571,9 @@ func menu_admin_daftar_akun_pending() {
 }
 
 func menu_home(idxAkunDipakai int) {
+	/* IS: Terdefinisi idxAkunDipakai.
+	   FS: Tercetak menu home.
+	*/
 	var input string
 	
 	fmt.Println("Selamat Datang,", dataAkun[idxAkunDipakai].name)
@@ -539,6 +604,9 @@ func menu_home(idxAkunDipakai int) {
 }
 
 func menu_home_setting_akun(idxAkunDipakai int) {
+	/* IS: Terdefinisi idxAkunDipakai.
+	   FS: Tercetak menu home setting akun dengan index idxAkunDipakai.
+	*/
 	var input, inputNama, inputPass, inputUname string
 	var grupIdx, grupUnameIdx, chatIdx, idxAkunReceiver, chatIdxReceiver int
 	
@@ -684,6 +752,9 @@ func menu_home_setting_akun(idxAkunDipakai int) {
 }
 
 func menu_chat(idxAkunDipakai int) {
+	/* IS: idxAkunDipakai terdefinisi dan menunjuk ke akun yang sedang digunakan.
+	   FS: Tercetak Menu chat dan menampilkan pilihan menu chat.
+	*/
 	var input, uname string
 	var idxAkun, idxChat, idxChatReceiver int
 	var newChat, newChatReceiver chat
@@ -765,6 +836,9 @@ func menu_chat(idxAkunDipakai int) {
 }
 
 func menu_pesan(idxAkunDipakai int, unameReceiver string, idxAkunReceiver int) {
+	/* IS: idxAkunDipakai terdefinisi dan menunjuk ke akun yang sedang digunakan, unameReceiver terdefinisi, dan idxAkunReceiver terdefinisi.
+	   FS: Tercetak menu pesan dan Menampilkan pilihan menu pesan (1: Tambah Pesan, 2: Hapus Pesan, 3: Kembali).
+	*/
 	var onChat chat
 	var onChatIdx, onChatReceiverIdx int
 	var input string
@@ -886,6 +960,9 @@ func menu_pesan(idxAkunDipakai int, unameReceiver string, idxAkunReceiver int) {
 }
 
 func menu_grup(idxAkunDipakai int) {
+	/* IS: idxAkunDipakai terdefinisi dan menunjuk ke akun yang sedang digunakan.
+	   FS: Tercetak menu grup dan Menampilkan pilihan menu grup (1: Pilih Grup, 2: Buat Grup, 3: Kembali).
+	*/
 	var input string
 	var noPilihGrup int
 	var grupIdx int
@@ -929,6 +1006,9 @@ func menu_grup(idxAkunDipakai int) {
 }
 
 func menu_grup_buat_grup(idxAkunDipakai int) {
+	/* IS: idxAkunDipakai terdefinisi dan menunjuk ke akun yang sedang digunakan.
+	   FS: Tercetak menu buat grup dan Menampilkan pilihan menu buat grup, jika data valid dan disetujui maka grup akan terbuat.
+	*/
 	var stopInput bool
 	var uname, inputLanjut, input string
 	var grupBaru group
@@ -1004,6 +1084,10 @@ func menu_grup_buat_grup(idxAkunDipakai int) {
 }
 
 func menu_grup_chat(idxAkunDipakai, grupIdx int) {
+	/* IS: idxAkunDipakai terdefinisi dan menunjuk ke akun yang sedang digunakan.
+	       grupIdx terdefinisi dan menunjuk ke grup yang sedang digunakan.
+	   FS: Tercetak menu chat pada grup dan Menampilkan pilihan menu grup chat (1: Tambah Pesan, 2: Hapus Pesan, 3: Info & Pengaturan, 4: Kembali) user bisa menambah pesan, menghapus pesan, masuk ke menu pengaturan dan kembali ke menu sebelumnya.
+	*/
 	var input, inputPesan string
 	var pesanBaru text
 	var inputNoHapusPesan int
@@ -1085,6 +1169,10 @@ func menu_grup_chat(idxAkunDipakai, grupIdx int) {
 }
 
 func menu_grup_chat_setting(idxAkunDipakai, grupIdx int) {
+	/* IS: idxAkunDipakai terdefinisi dan menunjuk ke akun yang sedang digunakan.
+	       grupIdx terdefinisi dan menunjuk ke grup yang sedang digunakan.
+	   FS: Tercetak menu pengaturan pada grup dan Menampilkan pilihan menu grup chat setting. User bisa mengubah nama grup, melihat anggota grup, keluar dari grup, dan kembali ke menu sebelumnya.
+	*/
 	var input, inputNamaGrup string
 	
 	menu_grup_chat_setting_views(grupIdx)
@@ -1141,6 +1229,10 @@ func menu_grup_chat_setting(idxAkunDipakai, grupIdx int) {
 }
 
 func menu_grup_chat_setting_member(idxAkunDipakai, grupIdx int) {
+	/* IS: idxAkunDipakai terdefinisi dan menunjuk ke akun yang sedang digunakan.
+	       grupIdx terdefinisi dan menunjuk ke grup yang sedang digunakan.
+	   FS: Tercetak menu pengaruran pada anggota grup dan Menampilkan pilihan menu grup chat setting member (1: Tambah Anggota, 2: Kembali), user bisa menambahkan anggota grup dan kembali ke menu sebelumnya.
+	*/
 	var input string
 
 	menu_grup_chat_setting_member_views(grupIdx)
@@ -1183,13 +1275,16 @@ func menu_grup_chat_setting_member(idxAkunDipakai, grupIdx int) {
 
 // Fungsi / Prosedur Tambahan
 func hapusAkun(data *accounts, nData *int, uname string) {
+	/* IS: data, nData, dan uname terdefinisi.
+	   FS: Menghapus akun dari data akun.
+	*/
 	var idx int = searchAkunIdx(*data, *nData, uname)
 	
-	// Tambain kondisi kalo dia ada di grup berarti keluar grup dulu
+	// Kondisi kalo akun berada di grup berarti akun akan keluar grup
 	for i := 0; i < data[idx].nGroup; i++ {
 		keluarGrup(&data[idx], data[idx].joinedGroupID[i])
 	}
-	// Tambain juga kondisi buat yang chat sama dia
+	// Menghapus akun dari data akun
 	for i := idx; i < *nData-1; i++ {
 		data[i] = data[i+1]
 	}
@@ -1197,6 +1292,10 @@ func hapusAkun(data *accounts, nData *int, uname string) {
 }
 
 func hapusChat(acc *account, idxChat int) {
+	/* IS: acc terdefinisi dan menunjuk ke akun yang sedang digunakan.
+	       idxChat terdefinisi dan menunjuk ke chat yang sedang digunakan.
+	   FS: Menghapus chat dari akun.
+	*/
 	for i := idxChat; i < acc.nChat-1; i++ {
 		acc.chatData[i] = acc.chatData[i+1]
 	}
@@ -1204,6 +1303,7 @@ func hapusChat(acc *account, idxChat int) {
 }
 
 func searchAkunIdx(data accounts, nData int, uname string) int {
+	// Mengembalikan indeks akun yang ditemukan dari data.
 	var found int = -1
 	var i int
 	for i < nData && found == -1 {
@@ -1216,6 +1316,7 @@ func searchAkunIdx(data accounts, nData int, uname string) int {
 }
 
 func searchChatIdx(acc account, unameReceiver string) int {
+	// Mengembalikan indeks chat yang ditemukan pada acc.
 	var found int = -1
 	var i int
 	for i < acc.nChat && found == -1 {
@@ -1228,6 +1329,7 @@ func searchChatIdx(acc account, unameReceiver string) int {
 }
 
 func searchPesanID(nomorPesan int, onChatAcc account, idxChat int) int {
+	// Mengembalikan indeks pesan yang ditemukan pada chat dengan index idxChat
 	var le, ri, mid, idx int
 	idx = -1
 	le = 0
@@ -1248,13 +1350,18 @@ func searchPesanID(nomorPesan int, onChatAcc account, idxChat int) int {
 }
 
 func hapusPesan(pesanID int, acc *account, accReceiver *account, idxChat, idxChatReceiver int) {
+	/* IS: pesanID, acc, accReceiver, idxChat, dan idxChatReceiver terdefinisi.
+	   FS: Pesan terhapus dari akun.
+	*/
 	var idxPesan, tempIdxPesanLama int
 	idxPesan = searchPesanID(pesanID, *acc, idxChat)
+	// Menghapus pesan pada akun yang dipakai
 	for i := idxPesan; i < acc.chatData[idxChat].nText-1; i++ {
 		tempIdxPesanLama = acc.chatData[idxChat].textData[i].textID
 		acc.chatData[idxChat].textData[i] = acc.chatData[idxChat].textData[i+1]
 		acc.chatData[idxChat].textData[i].textID = tempIdxPesanLama
 	}
+	// Menghapus pesan pada penerima pesan
 	for i := idxPesan; i < accReceiver.chatData[idxChatReceiver].nText-1; i++ {
 		tempIdxPesanLama = accReceiver.chatData[i].textData[idxPesan].textID
 		accReceiver.chatData[i].textData[idxPesan] = accReceiver.chatData[i].textData[idxPesan+1]
@@ -1265,6 +1372,7 @@ func hapusPesan(pesanID int, acc *account, accReceiver *account, idxChat, idxCha
 }
 
 func searchGrupIdx(inputIdGrup int) int {
+	// Mengembalikan indeks grup yang ditemukan.
 	var found int = -1
 	var i int
 	for i < nDataGrup && found == -1 {
@@ -1277,10 +1385,14 @@ func searchGrupIdx(inputIdGrup int) int {
 }
 
 func searchGrupIdxFromAcc(acc account, inputNo int) int {
+	// Mengembalikan index grup dari akun acc
 	return acc.joinedGroupID[inputNo-1]
 }
 
 func searchUnameInGrup(onGrup group, uname string) int {
+	/* IS: onGrup dan uname terdefinisi dan berisi data grup yang sedang diperiksa dan terdefinisi sebagai username yang dicari dalam grup
+	   FS: Mengembalikan indeks member yang ditemukan.
+	*/
 	var found int = -1
 	var i int
 	for i < onGrup.nMember && found == -1 {
@@ -1293,6 +1405,9 @@ func searchUnameInGrup(onGrup group, uname string) int {
 }
 
 func tambahGrupMember(onGrup *group, unameBaru string, grupIdx int) {
+	/* IS: onGrup dan unameBaru terdefinisi dan berisi data grup yang sedang diperiksa dan terdefinisi sebagai username yang dicari dalam grup
+	   FS: Menambahkan member ke grup.
+	*/
 	dataAkun[searchAkunIdx(dataAkun, nDataAkun, unameBaru)].joinedGroupID[dataAkun[searchAkunIdx(dataAkun, nDataAkun, unameBaru)].nGroup] = grupIdx
 	dataAkun[searchAkunIdx(dataAkun, nDataAkun, unameBaru)].nGroup++
 	onGrup.memberUname[onGrup.nMember] = unameBaru
@@ -1300,6 +1415,9 @@ func tambahGrupMember(onGrup *group, unameBaru string, grupIdx int) {
 }
 
 func hapusMemberGrup(grupIdx, memberIdx int) {
+	/* IS: grupIdx dan memberIdx terdefinisi.
+	   FS: Menghapus member dari grup.
+	*/
 	for i := memberIdx; i < dataGrup[grupIdx].nMember-1; i++ {
 		dataGrup[grupIdx].memberUname[i] = dataGrup[grupIdx].memberUname[i+1]
 	}
@@ -1307,6 +1425,9 @@ func hapusMemberGrup(grupIdx, memberIdx int) {
 }
 
 func hapusJoinedGrup(acc *account, grupIdx int) {
+	/* IS: acc dan grupIdx terdefinisi.
+	   FS: Menghapus grup dari akun.
+	*/
 	var found bool = false
 	for i := 0; i < acc.nGroup && !found; i++ {
 		if acc.joinedGroupID[i] == grupIdx {
@@ -1320,6 +1441,9 @@ func hapusJoinedGrup(acc *account, grupIdx int) {
 }
 
 func keluarGrup(acc *account, grupIdx int) {
+	/* IS: acc dan grupIdx terdefinisi.
+	   FS: Menghapus grup dari akun.
+	*/
 	var finish bool = false
 	var i int
 
@@ -1338,6 +1462,9 @@ func keluarGrup(acc *account, grupIdx int) {
 }
 
 func hapusGrup(grupIdx int) {
+	/* IS: grupIdx terdefinisi.
+	   FS: Menghapus grup dari dataGrup.
+	*/
 	var idx int = grupIdx
 	for i := idx; i < nDataGrup-1; i++ {
 		dataGrup[i] = dataGrup[i+1]
@@ -1346,7 +1473,9 @@ func hapusGrup(grupIdx int) {
 }
 
 func searchPesanGrupID(onGrup group, inputPesanID int) int {
-
+	/* IS: onGrup dan inputPesanID terdefinisi dan berisi data grup yang sedang diperiksa dan terdefinisi sebagai pesanID yang dicari dalam grup
+	   FS: Mengembalikan indeks pesan yang ditemukan.
+	*/
 	var found int = -1
 	var i int
 	for i < onGrup.nGroupText && found == -1 {
@@ -1359,6 +1488,9 @@ func searchPesanGrupID(onGrup group, inputPesanID int) int {
 }
 
 func hapusPesanGrup(grupIdx, pesanGrupID int) {
+	/* IS: grupIdx dan pesanGrupID terdefinisi.
+	   FS: Menghapus pesan dari grup.
+	*/
 	var tempIdxPesanLama text
 	for i := pesanGrupID; i < dataGrup[grupIdx].nGroupText-1; i++ {
 		tempIdxPesanLama = dataGrup[grupIdx].groupText[i]
@@ -1370,6 +1502,10 @@ func hapusPesanGrup(grupIdx, pesanGrupID int) {
 
 // Fungsi Insertion Sort untuk mengurutkan akun berdasarkan username
 func sortAkunByUname(data *accounts, nData int) {
+	/* IS: data adalah pointer ke array akun yang akan diurutkan berdasarkan username.
+	      nData adalah jumlah akun dalam array data.
+	   FS: Mengembalikan array akun yang telah diurutkan berdasarkan username.
+	*/
 	var i, j int
 	var key account
 
@@ -1386,6 +1522,10 @@ func sortAkunByUname(data *accounts, nData int) {
 
 // Fungsi selection sort untuk mengurutkan akun berdasarkan umur
 func sortAkunByAge(data *accounts, nData int) {
+	/* IS: data adalah pointer ke array akun yang akan diurutkan berdasarkan umur.
+	      nData adalah jumlah akun dalam array data.
+	   FS: Mengembalikan array akun yang telah diurutkan berdasarkan umur.
+	*/
 	var idxMin, j int
 	for i := 0; i < nData; i++ {
 		j = i
@@ -1402,6 +1542,10 @@ func sortAkunByAge(data *accounts, nData int) {
 
 // Fungsi untuk mengurutkan akun berdasarkan gender
 func sortAkunByGender(data *accounts, nData int) {
+	/* IS: data adalah pointer ke array akun yang akan diurutkan berdasarkan gender.
+	      nData adalah jumlah akun dalam array data.
+	   FS: Mengembalikan array akun yang telah diurutkan berdasarkan gender.
+	*/
     var i, j, minIdx int
     var temp account
 
@@ -1420,6 +1564,10 @@ func sortAkunByGender(data *accounts, nData int) {
 
 // Fungsi untuk mengurutkan chat berdasarkan username
 func sortChat(chatData *[NMAX]chat, nChat int) {
+	/* IS: chatData adalah pointer ke array chat yang akan diurutkan berdasarkan username.
+	      nChat adalah jumlah chat dalam array chatData.
+	   FS: Mengembalikan array chat yang telah diurutkan berdasarkan username.
+	*/
 	var i, j, minIdx int
 	var temp chat
 
@@ -1436,7 +1584,11 @@ func sortChat(chatData *[NMAX]chat, nChat int) {
 	}
 }
 
+// Fungsi untuk membersihkan layar dengan mendeteksi sistem operasi yang digunakan
 func clearScreen() {
+	/* IS: -
+	   FS: Mengosongkan layar.
+	*/
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows" {
 		cmd = exec.Command("cmd", "/c", "cls")
