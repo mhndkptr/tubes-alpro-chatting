@@ -1264,7 +1264,6 @@ func menu_grup_chat_setting_member(idxAkunDipakai, grupIdx int) {
 	}
 }
 
-// Fungsi / Prosedur Tambahan
 func hapusAkun(data *accounts, nData *int, uname string) {
 	/* IS: data, nData, dan uname terdefinisi.
 	   FS: Menghapus akun dari data akun.
