@@ -7,7 +7,7 @@ import (
 	"runtime"
 )
 
-const NMAX int = 50
+const NMAX int = 20
 
 type text struct {
 	textID      int
@@ -577,16 +577,17 @@ func menu_home(idxAkunDipakai int) {
 		fmt.Scan(&input)
 	}
 
-	if input == "1" {
+	switch input {
+	case "1": 
 		clearScreen()
 		menu_chat(idxAkunDipakai)
-	} else if input == "2" {
+	case "2": 
 		clearScreen()
 		menu_grup(idxAkunDipakai)
-	} else if input == "3" {
+	case "3": 
 		clearScreen()
 		menu_home_setting_akun(idxAkunDipakai)
-	} else {
+	default: 
 		clearScreen()
 		menu_utama()
 	}
@@ -1495,18 +1496,20 @@ func sortAkunByUname(data *accounts, nData int) {
 	      nData adalah jumlah akun dalam array data.
 	   FS: Mengembalikan array akun yang telah diurutkan berdasarkan username.
 	*/
-	var i, j int
-	var key account
+    var i, j, minIdx int
+    var temp account
 
-	for i = 1; i < nData; i++ {
-		key = data[i]
-		j = i - 1
-		for j >= 0 && data[j].uname > key.uname {
-			data[j+1] = data[j]
-			j = j - 1
-		}
-		data[j+1] = key
-	}
+    for i = 0; i < nData-1; i++ {
+        minIdx = i
+        for j = i + 1; j < nData; j++ {
+            if data[j].uname < data[minIdx].uname {
+                minIdx = j
+            }
+        }
+        temp = data[minIdx]
+        data[minIdx] = data[i]
+        data[i] = temp
+    }
 }
 
 func sortAkunByAge(data *accounts, nData int) {
@@ -1514,21 +1517,18 @@ func sortAkunByAge(data *accounts, nData int) {
 	      nData adalah jumlah akun dalam array data.
 	   FS: Mengembalikan array akun yang telah diurutkan berdasarkan umur.
 	*/
-	var idxMin, j int
-	var temp account
-	for i := 0; i < nData-1; i++ {
-		j = i + 1
-		idxMin = i
-		for j < nData {
-			if data[idxMin].umur > data[j].umur {
-				idxMin = j
-			}
-			j++
-		}
-		temp = data[idxMin]
-		data[idxMin] = data[i]
-		data[i] = temp
-	}
+    var i, j int
+    var key account
+
+    for i = 1; i < nData; i++ {
+        key = data[i]
+        j = i - 1
+        for j >= 0 && data[j].umur > key.umur {
+            data[j+1] = data[j]
+            j = j - 1
+        }
+        data[j+1] = key
+    }
 }
 
 func sortAkunByGender(data *accounts, nData int) {
