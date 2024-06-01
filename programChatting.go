@@ -7,7 +7,7 @@ import (
 	"runtime"
 )
 
-const NMAX int = 80
+const NMAX int = 50
 
 type text struct {
 	textID      int
@@ -270,7 +270,7 @@ func menu_chat_views(idxAkunDipakai int) {
 }
 
 func menu_pesan_views(onChat chat) {
-	/* IS: Terdefinisi chat.
+	/* IS: Terdefinisi onChat.
 	   FS: Tercetak semua pesan yang berisi pada onChat.
 	*/
 	var onChatReceiverIdx int
@@ -468,50 +468,51 @@ func menu_admin_daftar_akun(dataAkunCopy accounts) {
 	var input, uname string
 	var idxAkun int
 
-	clearScreen()
-	menu_admin_views_daftar_akun_sort(dataAkunCopy)
-	fmt.Println("Pilihan: 1. Hapus Akun, 2. Sort Akun (username), 3. Sort Akun (umur), 4. Sort Akun (gender), 5. Kembali")
-	fmt.Print("Pilih (1/2/3/4/5): ")
-	fmt.Scan(&input)
-
-	for input != "1" && input != "2" && input != "3" && input != "4" && input != "5" {
-		fmt.Println("Masukkan salah, silahkan input kembali.")
+	keepRunning := true
+	for keepRunning {
+		clearScreen()
+		menu_admin_views_daftar_akun_sort(dataAkunCopy)
+		fmt.Println("Pilihan: 1. Hapus Akun, 2. Sort Akun (username), 3. Sort Akun (umur), 4. Sort Akun (gender), 5. Kembali")
 		fmt.Print("Pilih (1/2/3/4/5): ")
 		fmt.Scan(&input)
-	}
 
-	if input == "1" {
-		fmt.Print("Masukkan username akun yang akan dihapus: ")
-		fmt.Scan(&uname)
-		idxAkun = searchAkunIdx(dataAkun, nDataAkun, uname)
-		if idxAkun != -1 {
-			clearScreen()
-			fmt.Println("Akun", dataAkun[idxAkun].name, "berhasil dihapus.")
-			hapusAkun(&dataAkun, &nDataAkun, dataAkun[idxAkun].uname)
-			menu_admin_daftar_akun(dataAkun)
-		} else {
-			clearScreen()
-			fmt.Println("Username tidak ditemukan, silahkan input kembali.")
-			menu_admin_daftar_akun(dataAkunCopy)
+		for input != "1" && input != "2" && input != "3" && input != "4" && input != "5" {
+			fmt.Println("Masukkan salah, silahkan input kembali.")
+			fmt.Print("Pilih (1/2/3/4/5): ")
+			fmt.Scan(&input)
 		}
-	} else if input == "2" {
-		dataAkunCopy = dataAkun
-		sortAkunByUname(&dataAkunCopy, nDataAkun)
-		clearScreen()
-		menu_admin_daftar_akun(dataAkunCopy)
-	} else if input == "3" {
-		dataAkunCopy = dataAkun
-		sortAkunByAge(&dataAkunCopy, nDataAkun)
-		clearScreen()
-		menu_admin_daftar_akun(dataAkunCopy)
-	} else if input == "4" {
-		dataAkunCopy = dataAkun
-		sortAkunByGender(&dataAkunCopy, nDataAkun)
-		clearScreen()
-		menu_admin_daftar_akun(dataAkunCopy)
-	} else {
-		clearScreen()
-		menu_admin()
+
+		switch input {
+		case "1":
+			fmt.Print("Masukkan username akun yang akan dihapus: ")
+			fmt.Scan(&uname)
+			idxAkun = searchAkunIdx(dataAkun, nDataAkun, uname)
+			if idxAkun != -1 {
+				clearScreen()
+				fmt.Println("Akun", dataAkun[idxAkun].name, "berhasil dihapus.")
+				hapusAkun(&dataAkun, &nDataAkun, dataAkun[idxAkun].uname)
+				dataAkunCopy = dataAkun
+			} else {
+				clearScreen()
+				fmt.Println("Username tidak ditemukan, silahkan input kembali.")
+			}
+		case "2":
+			dataAkunCopy = dataAkun
+			sortAkunByUname(&dataAkunCopy, nDataAkun)
+			clearScreen()
+		case "3":
+			dataAkunCopy = dataAkun
+			sortAkunByAge(&dataAkunCopy, nDataAkun)
+			clearScreen()
+		case "4":
+			dataAkunCopy = dataAkun
+			sortAkunByGender(&dataAkunCopy, nDataAkun)
+			clearScreen()
+		case "5":
+			clearScreen()
+			menu_admin()
+			keepRunning = false
+		}
 	}
 }
 
@@ -521,52 +522,54 @@ func menu_admin_daftar_akun_pending() {
 	*/
 	var input, uname string
 	var idxAkun int
-	
-	menu_admin_views_daftar_akun_pending()
 
-	fmt.Println("Pilihan: 1. Setujui Akun, 2. Tolak Akun, 3. Kembali")
-	fmt.Print("Pilih (1/2/3): ")
-	fmt.Scan(&input)
+	keepRunning := true
+	for keepRunning {
+		clearScreen()
+		menu_admin_views_daftar_akun_pending()
 
-	for input != "1" && input != "2" && input != "3" {
-		fmt.Println("Masukkan salah, silahkan input kembali.")
+		fmt.Println("Pilihan: 1. Setujui Akun, 2. Tolak Akun, 3. Kembali")
 		fmt.Print("Pilih (1/2/3): ")
 		fmt.Scan(&input)
-	}
 
-	if input == "1" {
-		fmt.Print("Masukkan username akun yang akan disetujui: ")
-		fmt.Scan(&uname)
-		idxAkun = searchAkunIdx(dataAkunPending, nDataAkunPending, uname)
-		if idxAkun != -1 {
-			clearScreen()
-			fmt.Println("Akun", dataAkunPending[idxAkun].name, "berhasil disetujui.")
-			dataAkun[nDataAkun] = dataAkunPending[idxAkun]
-			nDataAkun++
-			hapusAkun(&dataAkunPending, &nDataAkunPending, dataAkunPending[idxAkun].uname)
-			menu_admin_daftar_akun_pending()
-		} else {
-			clearScreen()
-			fmt.Println("Username tidak ditemukan, silahkan input kembali.")
-			menu_admin_daftar_akun_pending()
+		for input != "1" && input != "2" && input != "3" {
+			fmt.Println("Masukkan salah, silahkan input kembali.")
+			fmt.Print("Pilih (1/2/3): ")
+			fmt.Scan(&input)
 		}
-	} else if input == "2" {
-		fmt.Print("Masukkan username akun yang akan ditolak: ")
-		fmt.Scan(&uname)
-		idxAkun = searchAkunIdx(dataAkunPending, nDataAkunPending, uname)
-		if idxAkun != -1 {
+
+		switch input {
+		case "1":
+			fmt.Print("Masukkan username akun yang akan disetujui: ")
+			fmt.Scan(&uname)
+			idxAkun = searchAkunIdx(dataAkunPending, nDataAkunPending, uname)
+			if idxAkun != -1 {
+				clearScreen()
+				fmt.Println("Akun", dataAkunPending[idxAkun].name, "berhasil disetujui.")
+				dataAkun[nDataAkun] = dataAkunPending[idxAkun]
+				nDataAkun++
+				hapusAkun(&dataAkunPending, &nDataAkunPending, dataAkunPending[idxAkun].uname)
+			} else {
+				clearScreen()
+				fmt.Println("Username tidak ditemukan, silahkan input kembali.")
+			}
+		case "2":
+			fmt.Print("Masukkan username akun yang akan ditolak: ")
+			fmt.Scan(&uname)
+			idxAkun = searchAkunIdx(dataAkunPending, nDataAkunPending, uname)
+			if idxAkun != -1 {
+				clearScreen()
+				fmt.Println("Akun", dataAkunPending[idxAkun].name, "berhasil ditolak.")
+				hapusAkun(&dataAkunPending, &nDataAkunPending, dataAkunPending[idxAkun].uname)
+			} else {
+				clearScreen()
+				fmt.Println("Username tidak ditemukan, silahkan input kembali.")
+			}
+		case "3":
 			clearScreen()
-			fmt.Println("Akun", dataAkunPending[idxAkun].name, "berhasil ditolak.")
-			hapusAkun(&dataAkunPending, &nDataAkunPending, dataAkunPending[idxAkun].uname)
-			menu_admin_daftar_akun_pending()
-		} else {
-			clearScreen()
-			fmt.Println("Username tidak ditemukan, silahkan input kembali.")
-			menu_admin_daftar_akun_pending()
+			menu_admin()
+			keepRunning = false
 		}
-	} else {
-		clearScreen()
-		menu_admin()
 	}
 }
 
@@ -609,43 +612,24 @@ func menu_home_setting_akun(idxAkunDipakai int) {
 	*/
 	var input, inputNama, inputPass, inputUname string
 	var grupIdx, grupUnameIdx, chatIdx, idxAkunReceiver, chatIdxReceiver int
-	
-	menu_home_setting_akun_views(idxAkunDipakai)
-	fmt.Print("Pilih Menu (1/2/3/4/5): ")
-	fmt.Scan(&input)
 
-	for input != "1" && input != "2" && input != "3" && input != "4" && input != "5" {
-		fmt.Println("Masukkan salah, silahkan input kembali.")
+	for keepRunning := true; keepRunning; {
+		clearScreen()
+		menu_home_setting_akun_views(idxAkunDipakai)
 		fmt.Print("Pilih Menu (1/2/3/4/5): ")
 		fmt.Scan(&input)
-	}
 
-	if input == "1" {
-		fmt.Print("Massukkan nama baru: ")
-		fmt.Scan(&inputNama)
-
-		fmt.Println("Pilihan: 1. Ubah, 2. Batal")
-		fmt.Print("Pilih (1/2): ")
-		fmt.Scan(&input)
-		for input != "1" && input != "2" {
+		for input != "1" && input != "2" && input != "3" && input != "4" && input != "5" {
 			fmt.Println("Masukkan salah, silahkan input kembali.")
-			fmt.Print("Pilih (1/2): ")
+			fmt.Print("Pilih Menu (1/2/3/4/5): ")
 			fmt.Scan(&input)
 		}
-		if input == "1" {
-			dataAkun[idxAkunDipakai].name = inputNama
-			clearScreen()
-			fmt.Println("Nama berhasil diubah.")
-			menu_home_setting_akun(idxAkunDipakai)
-		} else {
-			clearScreen()
-			menu_home_setting_akun(idxAkunDipakai)
-		}
-	} else if input == "2" {
-		fmt.Print("Massukkan username baru: ")
-		fmt.Scan(&inputUname)
 
-		if searchAkunIdx(dataAkun, nDataAkun, inputUname) == -1 && searchAkunIdx(dataAkunPending, nDataAkunPending, inputUname) == -1 {
+		switch input {
+		case "1":
+			fmt.Print("Masukkan nama baru: ")
+			fmt.Scan(&inputNama)
+
 			fmt.Println("Pilihan: 1. Ubah, 2. Batal")
 			fmt.Print("Pilih (1/2): ")
 			fmt.Scan(&input)
@@ -654,54 +638,89 @@ func menu_home_setting_akun(idxAkunDipakai int) {
 				fmt.Print("Pilih (1/2): ")
 				fmt.Scan(&input)
 			}
-
 			if input == "1" {
-				for i := 0; i < dataAkun[idxAkunDipakai].nGroup; i++ {
-					grupIdx = dataAkun[idxAkunDipakai].joinedGroupID[i]
-					grupUnameIdx = searchUnameInGrup(dataGrup[grupIdx], dataAkun[idxAkunDipakai].uname)
-					dataGrup[grupIdx].memberUname[grupUnameIdx] = inputUname
-				}
-				// Ubah yang di chat
-				for i := 0; i < dataAkun[idxAkunDipakai].nChat; i++ {
-					idxAkunReceiver = searchAkunIdx(dataAkun, nDataAkun, dataAkun[idxAkunDipakai].chatData[i].receiverUname)
-					chatIdxReceiver = searchChatIdx(dataAkun[idxAkunReceiver], dataAkun[idxAkunDipakai].uname)
-					chatIdx = searchChatIdx(dataAkun[idxAkunDipakai], dataAkun[idxAkunReceiver].uname)
-					for j := 0; j < dataAkun[idxAkunReceiver].chatData[chatIdxReceiver].nText; j++ {
-						if dataAkun[idxAkunDipakai].uname == dataAkun[idxAkunReceiver].chatData[chatIdxReceiver].textData[j].authorUname {
-							dataAkun[idxAkunReceiver].chatData[chatIdxReceiver].textData[j].authorUname = inputUname
-						}
-					}
-					for j := 0; j < dataAkun[idxAkunDipakai].chatData[chatIdx].nText; j++ {
-						if dataAkun[idxAkunDipakai].uname == dataAkun[idxAkunDipakai].chatData[chatIdx].textData[j].authorUname {
-							dataAkun[idxAkunDipakai].chatData[chatIdx].textData[j].authorUname = inputUname
-						}
-					}
-					dataAkun[idxAkunReceiver].chatData[chatIdx].receiverUname = inputUname
-				}
-				// Ubah yang di akun
-				dataAkun[idxAkunDipakai].uname = inputUname
+				dataAkun[idxAkunDipakai].name = inputNama
 				clearScreen()
-				menu_home_setting_akun(idxAkunDipakai)
+				fmt.Println("Nama berhasil diubah.")
+			}
+		case "2":
+			fmt.Print("Masukkan username baru: ")
+			fmt.Scan(&inputUname)
+
+			if searchAkunIdx(dataAkun, nDataAkun, inputUname) == -1 && searchAkunIdx(dataAkunPending, nDataAkunPending, inputUname) == -1 {
+				fmt.Println("Pilihan: 1. Ubah, 2. Batal")
+				fmt.Print("Pilih (1/2): ")
+				fmt.Scan(&input)
+				for input != "1" && input != "2" {
+					fmt.Println("Masukkan salah, silahkan input kembali.")
+					fmt.Print("Pilih (1/2): ")
+					fmt.Scan(&input)
+				}
+
+				if input == "1" {
+					for i := 0; i < dataAkun[idxAkunDipakai].nGroup; i++ {
+						grupIdx = dataAkun[idxAkunDipakai].joinedGroupID[i]
+						grupUnameIdx = searchUnameInGrup(dataGrup[grupIdx], dataAkun[idxAkunDipakai].uname)
+						dataGrup[grupIdx].memberUname[grupUnameIdx] = inputUname
+					}
+					// Ubah yang di chat
+					for i := 0; i < dataAkun[idxAkunDipakai].nChat; i++ {
+						idxAkunReceiver = searchAkunIdx(dataAkun, nDataAkun, dataAkun[idxAkunDipakai].chatData[i].receiverUname)
+						chatIdxReceiver = searchChatIdx(dataAkun[idxAkunReceiver], dataAkun[idxAkunDipakai].uname)
+						chatIdx = searchChatIdx(dataAkun[idxAkunDipakai], dataAkun[idxAkunReceiver].uname)
+						for j := 0; j < dataAkun[idxAkunReceiver].chatData[chatIdxReceiver].nText; j++ {
+							if dataAkun[idxAkunDipakai].uname == dataAkun[idxAkunReceiver].chatData[chatIdxReceiver].textData[j].authorUname {
+								dataAkun[idxAkunReceiver].chatData[chatIdxReceiver].textData[j].authorUname = inputUname
+							}
+						}
+						for j := 0; j < dataAkun[idxAkunDipakai].chatData[chatIdx].nText; j++ {
+							if dataAkun[idxAkunDipakai].uname == dataAkun[idxAkunDipakai].chatData[chatIdx].textData[j].authorUname {
+								dataAkun[idxAkunDipakai].chatData[chatIdx].textData[j].authorUname = inputUname
+							}
+						}
+						dataAkun[idxAkunReceiver].chatData[chatIdx].receiverUname = inputUname
+					}
+					// Ubah yang di akun
+					dataAkun[idxAkunDipakai].uname = inputUname
+					clearScreen()
+					fmt.Println("Username berhasil diubah.")
+				}
 			} else {
 				clearScreen()
-				menu_home_setting_akun(idxAkunDipakai)
+				fmt.Println("Username telah digunakan.")
 			}
-		} else {
-			clearScreen()
-			fmt.Println("Username telah digunakan.")
-			menu_home_setting_akun(idxAkunDipakai)
-		}
-	} else if input == "3" {
-		fmt.Print("Masukkan password lama untuk mengubah: ")
-		fmt.Scan(&input)
+		case "3":
+			fmt.Print("Masukkan password lama untuk mengubah: ")
+			fmt.Scan(&input)
 
-		if input == dataAkun[idxAkunDipakai].pass {
-			fmt.Print("Masukkan password baru: ")
-			fmt.Scan(&inputPass)
-			fmt.Println("Apakah anda yakin ingin mengubah password.")
+			if input == dataAkun[idxAkunDipakai].pass {
+				fmt.Print("Masukkan password baru: ")
+				fmt.Scan(&inputPass)
+				fmt.Println("Apakah anda yakin ingin mengubah password.")
+				fmt.Println("Pilihan: 1. Yakin, 2. Batal")
+				fmt.Print("Pilih (1/2): ")
+
+				fmt.Scan(&input)
+				for input != "1" && input != "2" {
+					fmt.Println("Masukkan salah, silahkan input kembali.")
+					fmt.Print("Pilih (1/2): ")
+					fmt.Scan(&input)
+				}
+
+				if input == "1" {
+					dataAkun[idxAkunDipakai].pass = inputPass
+					clearScreen()
+					fmt.Println("Password berhasil diubah.")
+				}
+			} else {
+				clearScreen()
+				fmt.Println("Password salah.")
+			}
+		case "4":
+			fmt.Println("Apakah anda yakin ingin menghapus akun.")
 			fmt.Println("Pilihan: 1. Yakin, 2. Batal")
 			fmt.Print("Pilih (1/2): ")
-	
+
 			fmt.Scan(&input)
 			for input != "1" && input != "2" {
 				fmt.Println("Masukkan salah, silahkan input kembali.")
@@ -710,44 +729,17 @@ func menu_home_setting_akun(idxAkunDipakai int) {
 			}
 
 			if input == "1" {
-				dataAkun[idxAkunDipakai].pass = inputPass
 				clearScreen()
-				fmt.Println("Password berhasil diubah.")
-				menu_home_setting_akun(idxAkunDipakai)
-			} else {
-				clearScreen()
-				menu_home_setting_akun(idxAkunDipakai)
+				fmt.Println("Akun", dataAkun[idxAkunDipakai].name, "berhasil dihapus.")
+				hapusAkun(&dataAkun, &nDataAkun, dataAkunPending[idxAkunDipakai].uname)
+				menu_utama()
+				keepRunning = false
 			}
-
-		} else {
+		case "5":
 			clearScreen()
-			fmt.Println("Password salah.")
-			menu_home_setting_akun(idxAkunDipakai)
+			menu_home(idxAkunDipakai)
+			keepRunning = false
 		}
-	} else if input == "4" {
-		fmt.Println("Apakah anda yakin ingin menghapus akun.")
-		fmt.Println("Pilihan: 1. Yakin, 2. Batal")
-		fmt.Print("Pilih (1/2): ")
-
-		fmt.Scan(&input)
-		for input != "1" && input != "2" {
-			fmt.Println("Masukkan salah, silahkan input kembali.")
-			fmt.Print("Pilih (1/2): ")
-			fmt.Scan(&input)
-		}
-
-		if input == "1" {
-			clearScreen()
-			fmt.Println("Akun", dataAkun[idxAkunDipakai].name, "berhasil dihapus.")
-			hapusAkun(&dataAkun, &nDataAkun, dataAkunPending[idxAkunDipakai].uname)
-			menu_utama()
-		} else {
-			clearScreen()
-			menu_home_setting_akun(idxAkunDipakai)
-		}
-	} else {
-		clearScreen()
-		menu_home(idxAkunDipakai)
 	}
 }
 
@@ -759,79 +751,80 @@ func menu_chat(idxAkunDipakai int) {
 	var idxAkun, idxChat, idxChatReceiver int
 	var newChat, newChatReceiver chat
 
-	menu_chat_views(idxAkunDipakai)
+	for ok := true; ok; {
+		menu_chat_views(idxAkunDipakai)
 
-	fmt.Println("Pilihan: 1. Pilih Chat, 2. Tambah Chat, 3. Hapus Chat, 4. Kembali")
-	fmt.Print("Pilih (1/2/3/4): ")
-	fmt.Scan(&input)
-
-	for input != "1" && input != "2" && input != "3" && input != "4" {
-		fmt.Println("Masukkan salah, silahkan input kembali.")
+		fmt.Println("Pilihan: 1. Pilih Chat, 2. Tambah Chat, 3. Hapus Chat, 4. Kembali")
 		fmt.Print("Pilih (1/2/3/4): ")
 		fmt.Scan(&input)
-	}
-	if input == "1" {
-		fmt.Print("Masukkan username akun yang akan Anda chat: ")
-		fmt.Scan(&uname)
-		idxChat = searchChatIdx(dataAkun[idxAkunDipakai], uname)
-		if idxChat != -1 {
-			clearScreen()
-			idxAkun = searchAkunIdx(dataAkun, nDataAkun, dataAkun[idxAkunDipakai].chatData[idxChat].receiverUname)
-			menu_pesan(idxAkunDipakai, uname, idxAkun)
-		} else {
-			clearScreen()
-			fmt.Println("Username tidak ditemukan, silahkan input kembali.")
-			menu_chat(idxAkunDipakai)
+
+		for input != "1" && input != "2" && input != "3" && input != "4" {
+			fmt.Println("Masukkan salah, silahkan input kembali.")
+			fmt.Print("Pilih (1/2/3/4): ")
+			fmt.Scan(&input)
 		}
-	} else if input == "2" {
-		fmt.Print("Masukkan username akun yang akan Anda chat: ")
-		fmt.Scan(&uname)
-		for uname == dataAkun[idxAkunDipakai].uname {
-			fmt.Println("Username tidak valid, silahkan input kembali.")
+
+		switch input {
+		case "1":
 			fmt.Print("Masukkan username akun yang akan Anda chat: ")
 			fmt.Scan(&uname)
-		}
-		idxAkun = searchAkunIdx(dataAkun, nDataAkun, uname)
-		if idxAkun != -1 {
-			if searchChatIdx(dataAkun[idxAkunDipakai], uname) == -1 {
-				newChat.receiverUname = dataAkun[idxAkun].uname
-				newChatReceiver.receiverUname = dataAkun[idxAkunDipakai].uname
-				dataAkun[idxAkunDipakai].chatData[dataAkun[idxAkunDipakai].nChat] = newChat
-				dataAkun[idxAkun].chatData[dataAkun[idxAkun].nChat] = newChatReceiver
-				dataAkun[idxAkunDipakai].nChat++
-				dataAkun[idxAkun].nChat++
+			idxChat = searchChatIdx(dataAkun[idxAkunDipakai], uname)
+			if idxChat != -1 {
 				clearScreen()
+				idxAkun = searchAkunIdx(dataAkun, nDataAkun, dataAkun[idxAkunDipakai].chatData[idxChat].receiverUname)
 				menu_pesan(idxAkunDipakai, uname, idxAkun)
 			} else {
 				clearScreen()
-				fmt.Println("Chat dengan", uname, "sudah ada.")
-				menu_pesan(idxAkunDipakai, uname, idxAkun)
+				fmt.Println("Username tidak ditemukan, silahkan input kembali.")
 			}
-		} else {
-			clearScreen()
-			fmt.Println("Username tidak ditemukan, silahkan input kembali.")
-			menu_chat(idxAkunDipakai)
-		}
-	} else if input == "3" {
-		fmt.Print("Masukkan username akun yang akan Anda hapus chatnya: ")
-		fmt.Scan(&uname)
-		idxChat = searchChatIdx(dataAkun[idxAkunDipakai], uname)
-		if idxChat != -1 {
+		case "2":
+			fmt.Print("Masukkan username akun yang akan Anda chat: ")
+			fmt.Scan(&uname)
+			for uname == dataAkun[idxAkunDipakai].uname {
+				fmt.Println("Username tidak valid, silahkan input kembali.")
+				fmt.Print("Masukkan username akun yang akan Anda chat: ")
+				fmt.Scan(&uname)
+			}
 			idxAkun = searchAkunIdx(dataAkun, nDataAkun, uname)
-			idxChatReceiver = searchChatIdx(dataAkun[idxAkun], dataAkun[idxAkunDipakai].uname)
-			hapusChat(&dataAkun[idxAkunDipakai], idxChat)
-			hapusChat(&dataAkun[idxAkun], idxChatReceiver)
+			if idxAkun != -1 {
+				if searchChatIdx(dataAkun[idxAkunDipakai], uname) == -1 {
+					newChat.receiverUname = dataAkun[idxAkun].uname
+					newChatReceiver.receiverUname = dataAkun[idxAkunDipakai].uname
+					dataAkun[idxAkunDipakai].chatData[dataAkun[idxAkunDipakai].nChat] = newChat
+					dataAkun[idxAkun].chatData[dataAkun[idxAkun].nChat] = newChatReceiver
+					dataAkun[idxAkunDipakai].nChat++
+					dataAkun[idxAkun].nChat++
+					clearScreen()
+					menu_pesan(idxAkunDipakai, uname, idxAkun)
+				} else {
+					clearScreen()
+					fmt.Println("Chat dengan", uname, "sudah ada.")
+					menu_pesan(idxAkunDipakai, uname, idxAkun)
+				}
+			} else {
+				clearScreen()
+				fmt.Println("Username tidak ditemukan, silahkan input kembali.")
+			}
+		case "3":
+			fmt.Print("Masukkan username akun yang akan Anda hapus chatnya: ")
+			fmt.Scan(&uname)
+			idxChat = searchChatIdx(dataAkun[idxAkunDipakai], uname)
+			if idxChat != -1 {
+				idxAkun = searchAkunIdx(dataAkun, nDataAkun, uname)
+				idxChatReceiver = searchChatIdx(dataAkun[idxAkun], dataAkun[idxAkunDipakai].uname)
+				hapusChat(&dataAkun[idxAkunDipakai], idxChat)
+				hapusChat(&dataAkun[idxAkun], idxChatReceiver)
+				clearScreen()
+				fmt.Println("Chat berhasil dihapus.")
+			} else {
+				clearScreen()
+				fmt.Println("Username tidak ditemukan, silahkan input kembali.")
+			}
+		case "4":
 			clearScreen()
-			fmt.Println("Chat berhasil dihapus.")
-			menu_chat(idxAkunDipakai)
-		} else {
-			clearScreen()
-			fmt.Println("Username tidak ditemukan, silahkan input kembali.")
-			menu_chat(idxAkunDipakai)
+			menu_home(idxAkunDipakai)
+			ok = false
 		}
-	} else {
-		clearScreen()
-		menu_home(idxAkunDipakai)
 	}
 }
 
@@ -844,117 +837,115 @@ func menu_pesan(idxAkunDipakai int, unameReceiver string, idxAkunReceiver int) {
 	var input string
 	var pesanBaru text
 	var inputHapusPesan int
+	var lanjut bool = true
 
-	onChatIdx = searchChatIdx(dataAkun[idxAkunDipakai], unameReceiver)
-	onChat = dataAkun[idxAkunDipakai].chatData[onChatIdx]
-	
-	if searchAkunIdx(dataAkun, nDataAkun, unameReceiver) != -1 {
-		onChatReceiverIdx = searchChatIdx(dataAkun[idxAkunReceiver], dataAkun[idxAkunDipakai].uname)
-		menu_pesan_views(onChat)
-		fmt.Println("Pilihan: 1. Tambah Pesan, 2. Hapus Pesan, 3. Kembali")
-		fmt.Print("Pilih (1/2/3): ")
-		fmt.Scan(&input)
-	
-		for input != "1" && input != "2" && input != "3" {
-			fmt.Println("Masukkan salah, silahkan input kembali.")
+	for lanjut {
+		onChatIdx = searchChatIdx(dataAkun[idxAkunDipakai], unameReceiver)
+		onChat = dataAkun[idxAkunDipakai].chatData[onChatIdx]
+		if searchAkunIdx(dataAkun, nDataAkun, unameReceiver) != -1 {
+			onChatReceiverIdx = searchChatIdx(dataAkun[idxAkunReceiver], dataAkun[idxAkunDipakai].uname)
+			menu_pesan_views(onChat)
+			fmt.Println("Pilihan: 1. Tambah Pesan, 2. Hapus Pesan, 3. Kembali")
 			fmt.Print("Pilih (1/2/3): ")
 			fmt.Scan(&input)
-		}
-	
-		if input == "1" {
-			fmt.Print("Masukkan Pesan: ")
-			fmt.Scan(&input)
-			pesanBaru.message = input
-			pesanBaru.textID = dataAkun[idxAkunDipakai].chatData[onChatIdx].nText+1
-			pesanBaru.authorUname = dataAkun[idxAkunDipakai].uname
-	
-			fmt.Println("Pilihan: 1. Kirim, 2. Batal")
-			fmt.Print("Pilih (1/2): ")
-			fmt.Scan(&input)
-			for input != "1" && input != "2" {
+		
+			for input != "1" && input != "2" && input != "3" {
 				fmt.Println("Masukkan salah, silahkan input kembali.")
-				fmt.Print("Pilih (1/2): ")
+				fmt.Print("Pilih (1/2/3): ")
 				fmt.Scan(&input)
 			}
-	
+		
 			if input == "1" {
-				dataAkun[idxAkunDipakai].chatData[onChatIdx].textData[dataAkun[idxAkunDipakai].chatData[onChatIdx].nText] = pesanBaru
-				dataAkun[idxAkunDipakai].chatData[onChatIdx].nText++
-	
-				dataAkun[idxAkunReceiver].chatData[onChatReceiverIdx].textData[dataAkun[idxAkunReceiver].chatData[onChatReceiverIdx].nText] = pesanBaru
-				dataAkun[idxAkunReceiver].chatData[onChatReceiverIdx].nText++
-				
-				clearScreen()
-				menu_pesan(idxAkunDipakai, unameReceiver, idxAkunReceiver)
-			} else {
-				clearScreen()
-				menu_pesan(idxAkunDipakai, unameReceiver, idxAkunReceiver)
-			}
-		} else if input == "2" {
-			fmt.Print("Masukkan nomor pesan yang ingin dihapus: ")
-			fmt.Scan(&inputHapusPesan)
-	
-			fmt.Println("Pilihan: 1. Hapus, 2. Batal")
-			fmt.Print("Pilih (1/2): ")
-			fmt.Scan(&input)
-			for input != "1" && input != "2" {
-				fmt.Println("Masukkan salah, silahkan input kembali.")
+				fmt.Print("Masukkan Pesan: ")
+				fmt.Scan(&input)
+				pesanBaru.message = input
+				pesanBaru.textID = dataAkun[idxAkunDipakai].chatData[onChatIdx].nText+1
+				pesanBaru.authorUname = dataAkun[idxAkunDipakai].uname
+		
+				fmt.Println("Pilihan: 1. Kirim, 2. Batal")
 				fmt.Print("Pilih (1/2): ")
 				fmt.Scan(&input)
-			}
-	
-			if input == "1" {
-				if searchPesanID(inputHapusPesan, dataAkun[idxAkunDipakai], onChatIdx) != -1 {
-					if dataAkun[idxAkunDipakai].uname == dataAkun[idxAkunDipakai].chatData[onChatIdx].textData[searchPesanID(inputHapusPesan, dataAkun[idxAkunDipakai], onChatIdx)].authorUname {
-						hapusPesan(inputHapusPesan, &dataAkun[idxAkunDipakai], &dataAkun[idxAkunReceiver], onChatIdx, onChatReceiverIdx)
-						clearScreen()
-						menu_pesan(idxAkunDipakai, unameReceiver, idxAkunReceiver)
+				for input != "1" && input != "2" {
+					fmt.Println("Masukkan salah, silahkan input kembali.")
+					fmt.Print("Pilih (1/2): ")
+					fmt.Scan(&input)
+				}
+		
+				if input == "1" {
+					dataAkun[idxAkunDipakai].chatData[onChatIdx].textData[dataAkun[idxAkunDipakai].chatData[onChatIdx].nText] = pesanBaru
+					dataAkun[idxAkunDipakai].chatData[onChatIdx].nText++
+		
+					dataAkun[idxAkunReceiver].chatData[onChatReceiverIdx].textData[dataAkun[idxAkunReceiver].chatData[onChatReceiverIdx].nText] = pesanBaru
+					dataAkun[idxAkunReceiver].chatData[onChatReceiverIdx].nText++
+					
+					clearScreen()
+				} else {
+					clearScreen()
+				}
+			} else if input == "2" {
+				fmt.Print("Masukkan nomor pesan yang ingin dihapus: ")
+				fmt.Scan(&inputHapusPesan)
+		
+				fmt.Println("Pilihan: 1. Hapus, 2. Batal")
+				fmt.Print("Pilih (1/2): ")
+				fmt.Scan(&input)
+				for input != "1" && input != "2" {
+					fmt.Println("Masukkan salah, silahkan input kembali.")
+					fmt.Print("Pilih (1/2): ")
+					fmt.Scan(&input)
+				}
+		
+				if input == "1" {
+					if searchPesanID(inputHapusPesan, dataAkun[idxAkunDipakai], onChatIdx) != -1 {
+						if dataAkun[idxAkunDipakai].uname == dataAkun[idxAkunDipakai].chatData[onChatIdx].textData[searchPesanID(inputHapusPesan, dataAkun[idxAkunDipakai], onChatIdx)].authorUname {
+							hapusPesan(inputHapusPesan, &dataAkun[idxAkunDipakai], &dataAkun[idxAkunReceiver], onChatIdx, onChatReceiverIdx)
+							clearScreen()
+						} else {
+							clearScreen()
+							fmt.Println("Nomor pesan yang dipilih tidak valid.")
+						}
 					} else {
 						clearScreen()
-						fmt.Println("Nomor pesan yang dipilih tidak valid.")
-						menu_pesan(idxAkunDipakai, unameReceiver, idxAkunReceiver)
+						fmt.Println("Nomor pesan tidak ada.")
 					}
 				} else {
 					clearScreen()
-					fmt.Println("Nomor pesan tidak ada.")
-					menu_pesan(idxAkunDipakai, unameReceiver, idxAkunReceiver)
 				}
 			} else {
 				clearScreen()
-				menu_pesan(idxAkunDipakai, unameReceiver, idxAkunReceiver)
+				lanjut = false
+				menu_chat(idxAkunDipakai)
 			}
 		} else {
-			clearScreen()
-			menu_chat(idxAkunDipakai)
-		}
-	} else {
-		fmt.Print("Akun ", unameReceiver, " tidak terdaftar.\n")
-		menu_pesan_views(onChat)
-		fmt.Println("Pilihan: 1. Hapus Chat, 2. Kembali")
-		fmt.Print("Pilih (1/2): ")
-		fmt.Scan(&input)
-	
-		for input != "1" && input != "2" {
-			fmt.Println("Masukkan salah, silahkan input kembali.")
+			fmt.Print("Akun ", unameReceiver, " tidak terdaftar.\n")
+			menu_pesan_views(onChat)
+			fmt.Println("Pilihan: 1. Hapus Chat, 2. Kembali")
 			fmt.Print("Pilih (1/2): ")
 			fmt.Scan(&input)
-		}
-		if input == "1" {
-			fmt.Println("Apakah anda yakin ingin menghapus chat? ")
-			fmt.Println("Pilihan: 1. Yakin, 2. Batal")
-			fmt.Scan(&input)
+		
+			for input != "1" && input != "2" {
+				fmt.Println("Masukkan salah, silahkan input kembali.")
+				fmt.Print("Pilih (1/2): ")
+				fmt.Scan(&input)
+			}
 			if input == "1" {
-				hapusChat(&dataAkun[idxAkunDipakai], onChatIdx)
-				clearScreen()
-				fmt.Println("Chat berhasil dihapus.")
-				menu_chat(idxAkunDipakai)
+				fmt.Println("Apakah anda yakin ingin menghapus chat? ")
+				fmt.Println("Pilihan: 1. Yakin, 2. Batal")
+				fmt.Scan(&input)
+				if input == "1" {
+					hapusChat(&dataAkun[idxAkunDipakai], onChatIdx)
+					clearScreen()
+					fmt.Println("Chat berhasil dihapus.")
+					lanjut = false
+					menu_chat(idxAkunDipakai)
+				} else {
+					clearScreen()
+				}
 			} else {
 				clearScreen()
-				menu_pesan(idxAkunDipakai, unameReceiver, idxAkunReceiver)
+				lanjut = false
+				menu_chat(idxAkunDipakai)
 			}
-		} else {
-			clearScreen()
-			menu_chat(idxAkunDipakai)
 		}
 	}
 }
@@ -966,42 +957,44 @@ func menu_grup(idxAkunDipakai int) {
 	var input string
 	var noPilihGrup int
 	var grupIdx int
+	var lanjut bool = true
 
-	menu_grup_views(idxAkunDipakai)
+	for lanjut {
+		menu_grup_views(idxAkunDipakai)
 
-	fmt.Println("Pilihan: 1. Pilih Grup, 2. Buat Grup, 3. Kembali")
-	fmt.Print("Pilih (1/2/3): ")
-	fmt.Scan(&input)
-
-	for input != "1" && input != "2" && input != "3" {
-		fmt.Println("Masukkan salah, silahkan input kembali.")
+		fmt.Println("Pilihan: 1. Pilih Grup, 2. Buat Grup, 3. Kembali")
 		fmt.Print("Pilih (1/2/3): ")
 		fmt.Scan(&input)
-	}
-	if input == "1" {
-		fmt.Print("Masukkan nomor grup yang ingin di pilih: ")
-		fmt.Scan(&noPilihGrup)
-		if noPilihGrup >= 1 && noPilihGrup <= dataAkun[idxAkunDipakai].nGroup {
-			grupIdx = searchGrupIdxFromAcc(dataAkun[idxAkunDipakai], noPilihGrup)
-			if grupIdx != -1 {
-				clearScreen()
-				menu_grup_chat(idxAkunDipakai, grupIdx)
+
+		for input != "1" && input != "2" && input != "3" {
+			fmt.Println("Masukkan salah, silahkan input kembali.")
+			fmt.Print("Pilih (1/2/3): ")
+			fmt.Scan(&input)
+		}
+		if input == "1" {
+			fmt.Print("Masukkan nomor grup yang ingin di pilih: ")
+			fmt.Scan(&noPilihGrup)
+			if noPilihGrup >= 1 && noPilihGrup <= dataAkun[idxAkunDipakai].nGroup {
+				grupIdx = searchGrupIdxFromAcc(dataAkun[idxAkunDipakai], noPilihGrup)
+				if grupIdx != -1 {
+					clearScreen()
+					menu_grup_chat(idxAkunDipakai, grupIdx)
+				} else {
+					clearScreen()
+					fmt.Println("Grup tidak ada.")
+				}
 			} else {
 				clearScreen()
-				fmt.Println("Grup tidak ada.")
-				menu_grup(idxAkunDipakai)
+				fmt.Println("Nomor Grup tidak valid.")
 			}
+		} else if input == "2" {
+			clearScreen()
+			menu_grup_buat_grup(idxAkunDipakai)
 		} else {
 			clearScreen()
-			fmt.Println("Nomor Grup tidak valid.")
-			menu_grup(idxAkunDipakai)
+			lanjut = false
+			menu_home(idxAkunDipakai)
 		}
-	} else if input == "2" {
-		clearScreen()
-		menu_grup_buat_grup(idxAkunDipakai)
-	} else {
-		clearScreen()
-		menu_home(idxAkunDipakai)
 	}
 }
 
@@ -1091,80 +1084,79 @@ func menu_grup_chat(idxAkunDipakai, grupIdx int) {
 	var input, inputPesan string
 	var pesanBaru text
 	var inputNoHapusPesan int
+	var lanjut bool = true
 
-	menu_grup_chat_views(dataGrup[grupIdx], dataAkun[idxAkunDipakai].uname)
+	for lanjut {
+		menu_grup_chat_views(dataGrup[grupIdx], dataAkun[idxAkunDipakai].uname)
 
-	fmt.Println("Pilihan: 1. Tambah Pesan, 2. Hapus Pesan, 3. Info & Pengaturan, 4. Kembali")
-	fmt.Print("Pilih (1/2/3/4): ")
-	fmt.Scan(&input)
-
-	for input != "1" && input != "2" && input != "3" && input != "4" {
-		fmt.Println("Masukkan salah, silahkan input kembali.")
+		fmt.Println("Pilihan: 1. Tambah Pesan, 2. Hapus Pesan, 3. Info & Pengaturan, 4. Kembali")
 		fmt.Print("Pilih (1/2/3/4): ")
 		fmt.Scan(&input)
-	}
 
-	if input == "1" {
-		fmt.Print("Masukkan Pesan: ")
-		fmt.Scan(&inputPesan)
-
-		fmt.Println("Pilihan: 1. Kirim, 2. Batal")
-		fmt.Print("Pilih (1/2): ")
-		fmt.Scan(&input)
-
-		for input != "1" && input != "2" {
+		for input != "1" && input != "2" && input != "3" && input != "4" {
 			fmt.Println("Masukkan salah, silahkan input kembali.")
-			fmt.Print("Pilih (1/2): ")
+			fmt.Print("Pilih (1/2/3/4): ")
 			fmt.Scan(&input)
 		}
 
 		if input == "1" {
-			pesanBaru.message = inputPesan
-			pesanBaru.authorUname = dataAkun[idxAkunDipakai].uname
-			pesanBaru.textID = dataGrup[grupIdx].nGroupText+1
+			fmt.Print("Masukkan Pesan: ")
+			fmt.Scan(&inputPesan)
 
-			dataGrup[grupIdx].groupText[dataGrup[grupIdx].nGroupText] = pesanBaru
-			dataGrup[grupIdx].nGroupText++
-
-			clearScreen()
-			menu_grup_chat(idxAkunDipakai, grupIdx)
-		} else {
-			clearScreen()
-			menu_grup_chat(idxAkunDipakai, grupIdx)
-		}
-	} else if input == "2" {
-		fmt.Print("Masukkan nomor pesan yang ingin dihapus: ")
-		fmt.Scan(&inputNoHapusPesan)
-
-		fmt.Println("Pilihan: 1. Hapus, 2. Batal")
-		fmt.Print("Pilih (1/2): ")
-		fmt.Scan(&input)
-		for input != "1" && input != "2" {
-			fmt.Println("Masukkan salah, silahkan input kembali.")
+			fmt.Println("Pilihan: 1. Kirim, 2. Batal")
 			fmt.Print("Pilih (1/2): ")
 			fmt.Scan(&input)
-		}
 
-		if input == "1" {
-			if searchPesanGrupID(dataGrup[grupIdx], inputNoHapusPesan) != -1 {
-				hapusPesanGrup(grupIdx, searchPesanGrupID(dataGrup[grupIdx], inputNoHapusPesan))
+			for input != "1" && input != "2" {
+				fmt.Println("Masukkan salah, silahkan input kembali.")
+				fmt.Print("Pilih (1/2): ")
+				fmt.Scan(&input)
+			}
+
+			if input == "1" {
+				pesanBaru.message = inputPesan
+				pesanBaru.authorUname = dataAkun[idxAkunDipakai].uname
+				pesanBaru.textID = dataGrup[grupIdx].nGroupText+1
+
+				dataGrup[grupIdx].groupText[dataGrup[grupIdx].nGroupText] = pesanBaru
+				dataGrup[grupIdx].nGroupText++
+
 				clearScreen()
-				menu_grup_chat(idxAkunDipakai, grupIdx)
 			} else {
 				clearScreen()
-				fmt.Println("Nomor pesan yang dipilih tidak valid.")
-				menu_grup_chat(idxAkunDipakai, grupIdx)
 			}
+		} else if input == "2" {
+			fmt.Print("Masukkan nomor pesan yang ingin dihapus: ")
+			fmt.Scan(&inputNoHapusPesan)
+
+			fmt.Println("Pilihan: 1. Hapus, 2. Batal")
+			fmt.Print("Pilih (1/2): ")
+			fmt.Scan(&input)
+			for input != "1" && input != "2" {
+				fmt.Println("Masukkan salah, silahkan input kembali.")
+				fmt.Print("Pilih (1/2): ")
+				fmt.Scan(&input)
+			}
+
+			if input == "1" {
+				if searchPesanGrupID(dataGrup[grupIdx], inputNoHapusPesan) != -1 {
+					hapusPesanGrup(grupIdx, searchPesanGrupID(dataGrup[grupIdx], inputNoHapusPesan))
+					clearScreen()
+				} else {
+					clearScreen()
+					fmt.Println("Nomor pesan yang dipilih tidak valid.")
+				}
+			} else {
+				clearScreen()
+			}
+		} else if input == "3" {
+			clearScreen()
+			menu_grup_chat_setting(idxAkunDipakai, grupIdx)
 		} else {
 			clearScreen()
-			menu_grup_chat(idxAkunDipakai, grupIdx)
+			lanjut = false
+			menu_grup(idxAkunDipakai)
 		}
-	} else if input == "3" {
-		clearScreen()
-		menu_grup_chat_setting(idxAkunDipakai, grupIdx)
-	} else {
-		clearScreen()
-		menu_grup(idxAkunDipakai)
 	}
 }
 
@@ -1174,57 +1166,59 @@ func menu_grup_chat_setting(idxAkunDipakai, grupIdx int) {
 	   FS: Tercetak menu pengaturan pada grup dan Menampilkan pilihan menu grup chat setting. User bisa mengubah nama grup, melihat anggota grup, keluar dari grup, dan kembali ke menu sebelumnya.
 	*/
 	var input, inputNamaGrup string
+	var lanjut bool = true
 	
-	menu_grup_chat_setting_views(grupIdx)
+	for lanjut {
+		menu_grup_chat_setting_views(grupIdx)
 
-	fmt.Print("Pilih Menu (1/2/3/4): ")
-	fmt.Scan(&input)
-
-	for input != "1" && input != "2" && input != "3" && input != "4" {
-		fmt.Println("Masukkan salah, silahkan input kembali.")
 		fmt.Print("Pilih Menu (1/2/3/4): ")
 		fmt.Scan(&input)
-	}
-	if input == "1" {
-		fmt.Print("Masukkan nama grup baru: ")
-		fmt.Scan(&inputNamaGrup)
 
-		fmt.Println("Apakah anda yakin ingin mengubah nama grup.")
-		fmt.Println("Pilihan: 1. Yakin, 2. Batal")
-		fmt.Print("Pilih (1/2): ")
-
-		fmt.Scan(&input)
-		for input != "1" && input != "2" {
+		for input != "1" && input != "2" && input != "3" && input != "4" {
 			fmt.Println("Masukkan salah, silahkan input kembali.")
-			fmt.Print("Pilih (1/2): ")
+			fmt.Print("Pilih Menu (1/2/3/4): ")
 			fmt.Scan(&input)
 		}
 		if input == "1" {
-			dataGrup[grupIdx].grupName = inputNamaGrup
+			fmt.Print("Masukkan nama grup baru: ")
+			fmt.Scan(&inputNamaGrup)
+
+			fmt.Println("Apakah anda yakin ingin mengubah nama grup.")
+			fmt.Println("Pilihan: 1. Yakin, 2. Batal")
+			fmt.Print("Pilih (1/2): ")
+
+			fmt.Scan(&input)
+			for input != "1" && input != "2" {
+				fmt.Println("Masukkan salah, silahkan input kembali.")
+				fmt.Print("Pilih (1/2): ")
+				fmt.Scan(&input)
+			}
+			if input == "1" {
+				dataGrup[grupIdx].grupName = inputNamaGrup
+				clearScreen()
+				fmt.Println("Nama grup berhasil diubah.")
+			} else {
+				clearScreen()
+			}
+		} else if input == "2" {
 			clearScreen()
-			fmt.Println("Nama grup berhasil diubah.")
-			menu_grup_chat_setting(idxAkunDipakai, grupIdx)
+			menu_grup_chat_setting_member(idxAkunDipakai, grupIdx)
+		} else if input == "3" {
+			fmt.Println("Apakah anda yakin ingin keluar dari grup ini (Y/N): ")
+			fmt.Scan(&input)
+			if input == "Y" {
+				keluarGrup(&dataAkun[idxAkunDipakai], grupIdx)
+				clearScreen()
+				lanjut = false
+				menu_grup(idxAkunDipakai)
+			} else {
+				clearScreen()
+			}
 		} else {
 			clearScreen()
-			menu_grup_chat_setting(idxAkunDipakai, grupIdx)
+			lanjut = false
+			menu_grup_chat(idxAkunDipakai, grupIdx)
 		}
-	} else if input == "2" {
-		clearScreen()
-		menu_grup_chat_setting_member(idxAkunDipakai, grupIdx)
-	} else if input == "3" {
-		fmt.Println("Apakah anda yakin ingin keluar dari grup ini (Y/N): ")
-		fmt.Scan(&input)
-		if input == "Y" {
-			keluarGrup(&dataAkun[idxAkunDipakai], grupIdx)
-			clearScreen()
-			menu_grup(idxAkunDipakai)
-		} else {
-			clearScreen()
-			menu_grup_chat_setting(idxAkunDipakai, grupIdx)
-		}
-	} else {
-		clearScreen()
-		menu_grup_chat(idxAkunDipakai, grupIdx)
 	}
 }
 
@@ -1234,42 +1228,43 @@ func menu_grup_chat_setting_member(idxAkunDipakai, grupIdx int) {
 	   FS: Tercetak menu pengaruran pada anggota grup dan Menampilkan pilihan menu grup chat setting member (1: Tambah Anggota, 2: Kembali), user bisa menambahkan anggota grup dan kembali ke menu sebelumnya.
 	*/
 	var input string
+	var lanjut bool = true
 
-	menu_grup_chat_setting_member_views(grupIdx)
+	for lanjut {
+		menu_grup_chat_setting_member_views(grupIdx)
 
-	fmt.Println("Pilihan: 1. Tambah Anggota, 2. Kembali")
-	fmt.Print("Pilih (1/2): ")
-	fmt.Scan(&input)
-
-	for input != "1" && input != "2" {
-		fmt.Println("Masukkan salah, silahkan input kembali.")
+		fmt.Println("Pilihan: 1. Tambah Anggota, 2. Kembali")
 		fmt.Print("Pilih (1/2): ")
 		fmt.Scan(&input)
-	}
 
-	if input == "1" {
-		fmt.Print("Masukkan username akun yang ingin ditambahkan: ")
-		fmt.Scan(&input)
-		
-		if searchAkunIdx(dataAkun, nDataAkun, input) != -1 {
-			if searchUnameInGrup(dataGrup[grupIdx], input) == -1 {
-				tambahGrupMember(&dataGrup[grupIdx], input, grupIdx)
-				clearScreen()
-				fmt.Println("Username berhasil ditambahkan.")
-				menu_grup_chat_setting_member(idxAkunDipakai, grupIdx)
+		for input != "1" && input != "2" {
+			fmt.Println("Masukkan salah, silahkan input kembali.")
+			fmt.Print("Pilih (1/2): ")
+			fmt.Scan(&input)
+		}
+
+		if input == "1" {
+			fmt.Print("Masukkan username akun yang ingin ditambahkan: ")
+			fmt.Scan(&input)
+			
+			if searchAkunIdx(dataAkun, nDataAkun, input) != -1 {
+				if searchUnameInGrup(dataGrup[grupIdx], input) == -1 {
+					tambahGrupMember(&dataGrup[grupIdx], input, grupIdx)
+					clearScreen()
+					fmt.Println("Username berhasil ditambahkan.")
+				} else {
+					clearScreen()
+					fmt.Println("Username tersebut sudah ada di dalam grup.")
+				}
 			} else {
 				clearScreen()
-				fmt.Println("Username tersebut sudah ada di dalam grup.")
-				menu_grup_chat_setting_member(idxAkunDipakai, grupIdx)
+				fmt.Println("Username tidak ditemukan, silahkan input kembali.")
 			}
 		} else {
 			clearScreen()
-			fmt.Println("Username tidak ditemukan, silahkan input kembali.")
-			menu_grup_chat_setting_member(idxAkunDipakai, grupIdx)
+			lanjut = false
+			menu_grup_chat_setting(idxAkunDipakai, grupIdx)
 		}
-	} else {
-		clearScreen()
-		menu_grup_chat_setting(idxAkunDipakai, grupIdx)
 	}
 }
 
@@ -1500,7 +1495,6 @@ func hapusPesanGrup(grupIdx, pesanGrupID int) {
 	dataGrup[grupIdx].nGroupText--
 }
 
-// Fungsi Insertion Sort untuk mengurutkan akun berdasarkan username
 func sortAkunByUname(data *accounts, nData int) {
 	/* IS: data adalah pointer ke array akun yang akan diurutkan berdasarkan username.
 	      nData adalah jumlah akun dalam array data.
@@ -1520,15 +1514,15 @@ func sortAkunByUname(data *accounts, nData int) {
 	}
 }
 
-// Fungsi selection sort untuk mengurutkan akun berdasarkan umur
 func sortAkunByAge(data *accounts, nData int) {
 	/* IS: data adalah pointer ke array akun yang akan diurutkan berdasarkan umur.
 	      nData adalah jumlah akun dalam array data.
 	   FS: Mengembalikan array akun yang telah diurutkan berdasarkan umur.
 	*/
 	var idxMin, j int
-	for i := 0; i < nData; i++ {
-		j = i
+	var temp account
+	for i := 0; i < nData-1; i++ {
+		j = i + 1
 		idxMin = i
 		for j < nData {
 			if data[idxMin].umur > data[j].umur {
@@ -1536,11 +1530,12 @@ func sortAkunByAge(data *accounts, nData int) {
 			}
 			j++
 		}
-		data[j] = data[idxMin]
+		temp = data[idxMin]
+		data[idxMin] = data[i]
+		data[i] = temp
 	}
 }
 
-// Fungsi untuk mengurutkan akun berdasarkan gender
 func sortAkunByGender(data *accounts, nData int) {
 	/* IS: data adalah pointer ke array akun yang akan diurutkan berdasarkan gender.
 	      nData adalah jumlah akun dalam array data.
@@ -1562,7 +1557,6 @@ func sortAkunByGender(data *accounts, nData int) {
     }
 }
 
-// Fungsi untuk mengurutkan chat berdasarkan username
 func sortChat(chatData *[NMAX]chat, nChat int) {
 	/* IS: chatData adalah pointer ke array chat yang akan diurutkan berdasarkan username.
 	      nChat adalah jumlah chat dalam array chatData.
@@ -1584,7 +1578,6 @@ func sortChat(chatData *[NMAX]chat, nChat int) {
 	}
 }
 
-// Fungsi untuk membersihkan layar dengan mendeteksi sistem operasi yang digunakan
 func clearScreen() {
 	/* IS: -
 	   FS: Mengosongkan layar.
