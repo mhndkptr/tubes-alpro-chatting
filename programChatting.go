@@ -1048,16 +1048,20 @@ func menu_grup_buat_grup(idxAkunDipakai int) {
 	for !stopInput && grupBaru.nMember+1 < nDataAkun {
 		fmt.Print("Apakah ingin menambahkan anggota lain? (Y/N): ")
 		fmt.Scan(&inputLanjut)
+		for inputLanjut != "N" && inputLanjut != "Y" {
+			fmt.Print("Apakah ingin menambahkan anggota lain? (Y/N): ")
+			fmt.Scan(&inputLanjut)
+		}
 		if inputLanjut == "N" {
 			stopInput = true
 		} else {
 			fmt.Print("Tambahkan anggota grup (username): ")
 			fmt.Scan(&uname)
-			if searchAkunIdx(dataAkun, nDataAkun, uname) != -1 {
+			if searchAkunIdx(dataAkun, nDataAkun, uname) != -1 && uname != dataAkun[idxAkunDipakai].uname {
 				grupBaru.memberUname[grupBaru.nMember] = uname
 				grupBaru.nMember++
 			} else {
-				fmt.Println("Username tidak ditemukan, silahkan input kembali.")
+				fmt.Println("Username tidak valid, silahkan input kembali.")
 			}
 		}
 	}
@@ -1393,9 +1397,9 @@ func hapusPesan(pesanID int, acc *account, accReceiver *account, idxChat, idxCha
 	}
 	// Menghapus pesan pada penerima pesan
 	for i := idxPesan; i < accReceiver.chatData[idxChatReceiver].nText-1; i++ {
-		tempIdxPesanLama = accReceiver.chatData[i].textData[idxPesan].textID
-		accReceiver.chatData[i].textData[idxPesan] = accReceiver.chatData[i].textData[idxPesan+1]
-		accReceiver.chatData[i].textData[idxPesan].textID = tempIdxPesanLama
+		tempIdxPesanLama = accReceiver.chatData[idxChatReceiver].textData[i].textID
+		accReceiver.chatData[idxChatReceiver].textData[i] = accReceiver.chatData[idxChatReceiver].textData[i+1]
+		accReceiver.chatData[idxChatReceiver].textData[i].textID = tempIdxPesanLama
 	}
 	acc.chatData[idxChat].nText--
 	accReceiver.chatData[idxChatReceiver].nText--
