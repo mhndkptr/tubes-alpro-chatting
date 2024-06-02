@@ -7,7 +7,8 @@ import (
 	"runtime"
 )
 
-const NMAX int = 10
+const NMAX_AKUN_GRUP int = 5
+const NMAX_TEXT int = 15
 
 type text struct {
 	textID      int
@@ -17,27 +18,27 @@ type text struct {
 
 type chat struct {
 	receiverUname string
-	textData      [NMAX]text
+	textData      [NMAX_TEXT]text
 	nText, chatID int
 }
 
 type group struct {
-	memberUname [NMAX]string
+	memberUname [NMAX_AKUN_GRUP]string
 	grupName    string
-	groupText   [NMAX]text
+	groupText   [NMAX_TEXT]text
 	nMember, nGroupText, grupID int
 }
 
 type account struct {
 	name, uname, pass, gender string
 	umur int
-	chatData          [NMAX]chat
-	joinedGroupID     [NMAX]int
+	chatData          [NMAX_AKUN_GRUP-1]chat
+	joinedGroupID     [NMAX_AKUN_GRUP]int
 	nChat, nGroup     int
 }
 
-type accounts [NMAX]account
-type groups [NMAX]group
+type accounts [NMAX_AKUN_GRUP]account
+type groups [NMAX_AKUN_GRUP]group
 
 var dataGrup groups
 var dataAkun, dataAkunPending accounts
@@ -252,7 +253,7 @@ func menu_chat_views(idxAkunDipakai int) {
 	*/
 	var tampilAkunUname string
 
-	var chatCopy [NMAX]chat = dataAkun[idxAkunDipakai].chatData
+	var chatCopy [NMAX_AKUN_GRUP-1]chat = dataAkun[idxAkunDipakai].chatData
 	sortChat(&chatCopy, dataAkun[idxAkunDipakai].nChat)
 
 	fmt.Println("|~~~|-----------------Menu Chat-----------------|~~~|")
@@ -400,27 +401,38 @@ func menu_utama() {
 	   FS: Tercetak menu utama.
 	*/
 	var input string
+	var lanjut bool = true
 	
-	menu_welcome_views()
-	menu_utama_views()
-	fmt.Print("Pilih Menu (1/2/3/4): ")
-	fmt.Scan(&input)
-	for input != "1" && input != "2" && input != "3" && input != "4" {
-		fmt.Println("Masukkan salah, silahkan input kembali.")
+	for lanjut {
+		menu_welcome_views()
+		menu_utama_views()
 		fmt.Print("Pilih Menu (1/2/3/4): ")
 		fmt.Scan(&input)
-	}
-	if input == "1" {
-		clearScreen()
-		menu_registrasi()
-	} else if input == "2" {
-		clearScreen()
-		menu_login()
-	} else if input == "3" {
-		clearScreen()
-		menu_admin()
-	} else {
-		os.Exit(0)
+		for input != "1" && input != "2" && input != "3" && input != "4" {
+			fmt.Println("Masukkan salah, silahkan input kembali.")
+			fmt.Print("Pilih Menu (1/2/3/4): ")
+			fmt.Scan(&input)
+		}
+		if input == "1" {
+			if nDataAkun + nDataAkunPending < NMAX_AKUN_GRUP {
+				clearScreen()
+				menu_registrasi()
+			} else {
+				clearScreen()
+				fmt.Println("Program telah mencapai batas maksimal akun yang dapat dibuat.")
+			}
+		} else if input == "2" {
+			clearScreen()
+			lanjut = false
+			menu_login()
+		} else if input == "3" {
+			clearScreen()
+			lanjut = false
+			menu_admin()
+		} else {
+			lanjut = false
+			os.Exit(0)
+		}
 	}
 }
 
@@ -774,34 +786,39 @@ func menu_chat(idxAkunDipakai int) {
 				fmt.Println("Username tidak ditemukan, silahkan input kembali.")
 			}
 		} else if input == "2" {
-			fmt.Print("Masukkan username akun yang akan Anda chat: ")
-			fmt.Scan(&uname)
-			for uname == dataAkun[idxAkunDipakai].uname {
-				fmt.Println("Username tidak valid, silahkan input kembali.")
+			if dataAkun[idxAkunDipakai].nChat < NMAX_AKUN_GRUP-1 {
 				fmt.Print("Masukkan username akun yang akan Anda chat: ")
 				fmt.Scan(&uname)
-			}
-			idxAkun = searchAkunIdx(dataAkun, nDataAkun, uname)
-			if idxAkun != -1 {
-				if searchChatIdx(dataAkun[idxAkunDipakai], uname) == -1 {
-					newChat.receiverUname = dataAkun[idxAkun].uname
-					newChatReceiver.receiverUname = dataAkun[idxAkunDipakai].uname
-					dataAkun[idxAkunDipakai].chatData[dataAkun[idxAkunDipakai].nChat] = newChat
-					dataAkun[idxAkun].chatData[dataAkun[idxAkun].nChat] = newChatReceiver
-					dataAkun[idxAkunDipakai].nChat++
-					dataAkun[idxAkun].nChat++
-					clearScreen()
-					lanjut = false
-					menu_pesan(idxAkunDipakai, uname, idxAkun)
+				for uname == dataAkun[idxAkunDipakai].uname {
+					fmt.Println("Username tidak valid, silahkan input kembali.")
+					fmt.Print("Masukkan username akun yang akan Anda chat: ")
+					fmt.Scan(&uname)
+				}
+				idxAkun = searchAkunIdx(dataAkun, nDataAkun, uname)
+				if idxAkun != -1 {
+					if searchChatIdx(dataAkun[idxAkunDipakai], uname) == -1 {
+						newChat.receiverUname = dataAkun[idxAkun].uname
+						newChatReceiver.receiverUname = dataAkun[idxAkunDipakai].uname
+						dataAkun[idxAkunDipakai].chatData[dataAkun[idxAkunDipakai].nChat] = newChat
+						dataAkun[idxAkun].chatData[dataAkun[idxAkun].nChat] = newChatReceiver
+						dataAkun[idxAkunDipakai].nChat++
+						dataAkun[idxAkun].nChat++
+						clearScreen()
+						lanjut = false
+						menu_pesan(idxAkunDipakai, uname, idxAkun)
+					} else {
+						clearScreen()
+						fmt.Println("Chat dengan", uname, "sudah ada.")
+						lanjut = false
+						menu_pesan(idxAkunDipakai, uname, idxAkun)
+					}
 				} else {
 					clearScreen()
-					fmt.Println("Chat dengan", uname, "sudah ada.")
-					lanjut = false
-					menu_pesan(idxAkunDipakai, uname, idxAkun)
+					fmt.Println("Username tidak ditemukan, silahkan input kembali.")
 				}
 			} else {
 				clearScreen()
-				fmt.Println("Username tidak ditemukan, silahkan input kembali.")
+				fmt.Println("Program telah mencapai batas maksimal chat.")
 			}
 		} else if input == "3" {
 			fmt.Print("Masukkan username akun yang akan Anda hapus chatnya: ")
@@ -854,31 +871,36 @@ func menu_pesan(idxAkunDipakai int, unameReceiver string, idxAkunReceiver int) {
 			}
 		
 			if input == "1" {
-				fmt.Print("Masukkan Pesan: ")
-				fmt.Scan(&input)
-				pesanBaru.message = input
-				pesanBaru.textID = dataAkun[idxAkunDipakai].chatData[onChatIdx].nText+1
-				pesanBaru.authorUname = dataAkun[idxAkunDipakai].uname
-		
-				fmt.Println("Pilihan: 1. Kirim, 2. Batal")
-				fmt.Print("Pilih (1/2): ")
-				fmt.Scan(&input)
-				for input != "1" && input != "2" {
-					fmt.Println("Masukkan salah, silahkan input kembali.")
+				if onChat.nText < NMAX_TEXT {
+					fmt.Print("Masukkan Pesan: ")
+					fmt.Scan(&input)
+					pesanBaru.message = input
+					pesanBaru.textID = dataAkun[idxAkunDipakai].chatData[onChatIdx].nText+1
+					pesanBaru.authorUname = dataAkun[idxAkunDipakai].uname
+			
+					fmt.Println("Pilihan: 1. Kirim, 2. Batal")
 					fmt.Print("Pilih (1/2): ")
 					fmt.Scan(&input)
-				}
-		
-				if input == "1" {
-					dataAkun[idxAkunDipakai].chatData[onChatIdx].textData[dataAkun[idxAkunDipakai].chatData[onChatIdx].nText] = pesanBaru
-					dataAkun[idxAkunDipakai].chatData[onChatIdx].nText++
-		
-					dataAkun[idxAkunReceiver].chatData[onChatReceiverIdx].textData[dataAkun[idxAkunReceiver].chatData[onChatReceiverIdx].nText] = pesanBaru
-					dataAkun[idxAkunReceiver].chatData[onChatReceiverIdx].nText++
-					
-					clearScreen()
+					for input != "1" && input != "2" {
+						fmt.Println("Masukkan salah, silahkan input kembali.")
+						fmt.Print("Pilih (1/2): ")
+						fmt.Scan(&input)
+					}
+			
+					if input == "1" {
+						dataAkun[idxAkunDipakai].chatData[onChatIdx].textData[dataAkun[idxAkunDipakai].chatData[onChatIdx].nText] = pesanBaru
+						dataAkun[idxAkunDipakai].chatData[onChatIdx].nText++
+			
+						dataAkun[idxAkunReceiver].chatData[onChatReceiverIdx].textData[dataAkun[idxAkunReceiver].chatData[onChatReceiverIdx].nText] = pesanBaru
+						dataAkun[idxAkunReceiver].chatData[onChatReceiverIdx].nText++
+						
+						clearScreen()
+					} else {
+						clearScreen()
+					}
 				} else {
 					clearScreen()
+					fmt.Println("Chat ini telah mencapai batas maksimal pengiriman pesan.")
 				}
 			} else if input == "2" {
 				fmt.Print("Masukkan nomor pesan yang ingin dihapus: ")
@@ -986,8 +1008,13 @@ func menu_grup(idxAkunDipakai int) {
 				fmt.Println("Nomor Grup tidak valid.")
 			}
 		} else if input == "2" {
-			clearScreen()
-			menu_grup_buat_grup(idxAkunDipakai)
+			if nDataGrup < NMAX_AKUN_GRUP {
+				clearScreen()
+				menu_grup_buat_grup(idxAkunDipakai)
+			} else {
+				clearScreen()
+				fmt.Println("Program telah mencapai batas maksimal grup.")
+			}
 		} else {
 			clearScreen()
 			lanjut = false
@@ -1018,7 +1045,7 @@ func menu_grup_buat_grup(idxAkunDipakai int) {
 	grupBaru.memberUname[grupBaru.nMember] = uname
 	grupBaru.nMember++
 
-	for !stopInput {
+	for !stopInput && grupBaru.nMember+1 < nDataAkun {
 		fmt.Print("Apakah ingin menambahkan anggota lain? (Y/N): ")
 		fmt.Scan(&inputLanjut)
 		if inputLanjut == "N" {
@@ -1098,30 +1125,35 @@ func menu_grup_chat(idxAkunDipakai, grupIdx int) {
 		}
 
 		if input == "1" {
-			fmt.Print("Masukkan Pesan: ")
-			fmt.Scan(&inputPesan)
-
-			fmt.Println("Pilihan: 1. Kirim, 2. Batal")
-			fmt.Print("Pilih (1/2): ")
-			fmt.Scan(&input)
-
-			for input != "1" && input != "2" {
-				fmt.Println("Masukkan salah, silahkan input kembali.")
+			if dataGrup[grupIdx].nGroupText < NMAX_TEXT {
+				fmt.Print("Masukkan Pesan: ")
+				fmt.Scan(&inputPesan)
+	
+				fmt.Println("Pilihan: 1. Kirim, 2. Batal")
 				fmt.Print("Pilih (1/2): ")
 				fmt.Scan(&input)
-			}
-
-			if input == "1" {
-				pesanBaru.message = inputPesan
-				pesanBaru.authorUname = dataAkun[idxAkunDipakai].uname
-				pesanBaru.textID = dataGrup[grupIdx].nGroupText+1
-
-				dataGrup[grupIdx].groupText[dataGrup[grupIdx].nGroupText] = pesanBaru
-				dataGrup[grupIdx].nGroupText++
-
-				clearScreen()
+	
+				for input != "1" && input != "2" {
+					fmt.Println("Masukkan salah, silahkan input kembali.")
+					fmt.Print("Pilih (1/2): ")
+					fmt.Scan(&input)
+				}
+	
+				if input == "1" {
+					pesanBaru.message = inputPesan
+					pesanBaru.authorUname = dataAkun[idxAkunDipakai].uname
+					pesanBaru.textID = dataGrup[grupIdx].nGroupText+1
+	
+					dataGrup[grupIdx].groupText[dataGrup[grupIdx].nGroupText] = pesanBaru
+					dataGrup[grupIdx].nGroupText++
+	
+					clearScreen()
+				} else {
+					clearScreen()
+				}
 			} else {
 				clearScreen()
+				fmt.Println("Chat ini telah mencapai batas maksimal pengiriman pesan.")
 			}
 		} else if input == "2" {
 			fmt.Print("Masukkan nomor pesan yang ingin dihapus: ")
@@ -1242,21 +1274,26 @@ func menu_grup_chat_setting_member(idxAkunDipakai, grupIdx int) {
 		}
 
 		if input == "1" {
-			fmt.Print("Masukkan username akun yang ingin ditambahkan: ")
-			fmt.Scan(&input)
-			
-			if searchAkunIdx(dataAkun, nDataAkun, input) != -1 {
-				if searchUnameInGrup(dataGrup[grupIdx], input) == -1 {
-					tambahGrupMember(&dataGrup[grupIdx], input, grupIdx)
-					clearScreen()
-					fmt.Println("Username berhasil ditambahkan.")
+			if dataGrup[grupIdx].nMember < NMAX_AKUN_GRUP {
+				fmt.Print("Masukkan username akun yang ingin ditambahkan: ")
+				fmt.Scan(&input)
+				
+				if searchAkunIdx(dataAkun, nDataAkun, input) != -1 {
+					if searchUnameInGrup(dataGrup[grupIdx], input) == -1 {
+						tambahGrupMember(&dataGrup[grupIdx], input, grupIdx)
+						clearScreen()
+						fmt.Println("Username berhasil ditambahkan.")
+					} else {
+						clearScreen()
+						fmt.Println("Username tersebut sudah ada di dalam grup.")
+					}
 				} else {
 					clearScreen()
-					fmt.Println("Username tersebut sudah ada di dalam grup.")
+					fmt.Println("Username tidak ditemukan, silahkan input kembali.")
 				}
 			} else {
 				clearScreen()
-				fmt.Println("Username tidak ditemukan, silahkan input kembali.")
+				fmt.Println("Program telah mencapai batas maksimal anggota member.")
 			}
 		} else {
 			clearScreen()
@@ -1271,10 +1308,11 @@ func hapusAkun(data *accounts, nData *int, uname string) {
 	   FS: Menghapus akun dari data akun.
 	*/
 	var idx int = searchAkunIdx(*data, *nData, uname)
+	var tempDataAkun account = data[idx]
 	
 	// Kondisi kalo akun berada di grup berarti akun akan keluar grup
-	for i := 0; i < data[idx].nGroup; i++ {
-		keluarGrup(&data[idx], data[idx].joinedGroupID[i])
+	for k := 0; k < tempDataAkun.nGroup; k++ {
+		keluarGrup(&data[idx], tempDataAkun.joinedGroupID[k])
 	}
 	// Menghapus akun dari data akun
 	*nData = *nData - 1
@@ -1412,6 +1450,12 @@ func hapusMemberGrup(grupIdx, memberIdx int) {
 	*/
 	for i := memberIdx; i < dataGrup[grupIdx].nMember-1; i++ {
 		dataGrup[grupIdx].memberUname[i] = dataGrup[grupIdx].memberUname[i+1]
+		if i == dataGrup[grupIdx].nMember-2 && dataGrup[grupIdx].nMember == NMAX_AKUN_GRUP {
+			dataGrup[grupIdx].memberUname[i+1] = ""
+		}
+	}
+	if memberIdx == dataGrup[grupIdx].nMember-1 {
+		dataGrup[grupIdx].memberUname[memberIdx] = ""
 	}
 	dataGrup[grupIdx].nMember--
 }
@@ -1436,18 +1480,9 @@ func keluarGrup(acc *account, grupIdx int) {
 	/* IS: acc dan grupIdx terdefinisi.
 	   FS: Menghapus grup dari akun.
 	*/
-	var finish bool = false
-	var i int
-
-	for i < dataGrup[grupIdx].nMember && !finish {
-		if dataGrup[grupIdx].memberUname[i] == acc.uname {
-			hapusMemberGrup(grupIdx, i)
-			hapusJoinedGrup(acc, grupIdx)
-			finish = true
-		}
-		i++
-	}
-	// Perlu tambain kondisi kalo anggota grup habis brarti hapus grup
+	hapusMemberGrup(grupIdx, searchUnameInGrup(dataGrup[grupIdx], acc.uname))
+	hapusJoinedGrup(acc, grupIdx)
+	// Kondisi kalo anggota grup habis brarti hapus grup
 	if dataGrup[grupIdx].nMember == 0 {
 		hapusGrup(grupIdx)
 	}
@@ -1553,7 +1588,7 @@ func sortAkunByGender(data *accounts, nData int) {
     }
 }
 
-func sortChat(chatData *[NMAX]chat, nChat int) {
+func sortChat(chatData *[NMAX_AKUN_GRUP-1]chat, nChat int) {
 	/* IS: chatData adalah pointer ke array chat yang akan diurutkan berdasarkan username.
 	      nChat adalah jumlah chat dalam array chatData.
 	   FS: Mengembalikan array chat yang telah diurutkan berdasarkan username.
