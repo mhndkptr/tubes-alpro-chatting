@@ -1008,12 +1008,17 @@ func menu_grup(idxAkunDipakai int) {
 				fmt.Println("Nomor Grup tidak valid.")
 			}
 		} else if input == "2" {
-			if nDataGrup < NMAX_AKUN_GRUP {
-				clearScreen()
-				menu_grup_buat_grup(idxAkunDipakai)
+			if nDataAkun >= 2 {
+				if nDataGrup < NMAX_AKUN_GRUP {
+					clearScreen()
+					menu_grup_buat_grup(idxAkunDipakai)
+				} else {
+					clearScreen()
+					fmt.Println("Program telah mencapai batas maksimal grup.")
+				}
 			} else {
 				clearScreen()
-				fmt.Println("Program telah mencapai batas maksimal grup.")
+				fmt.Println("Jumlah akun tidak mencukupi untuk membuat grup.")
 			}
 		} else {
 			clearScreen()
@@ -1030,6 +1035,7 @@ func menu_grup_buat_grup(idxAkunDipakai int) {
 	var stopInput bool
 	var uname, inputLanjut, input string
 	var grupBaru group
+	var jumGagal int
 	grupBaru.grupID = nDataGrup+1
 
 	fmt.Println("|~~~|------------------Buat Grup----------------|~~~|")
@@ -1038,6 +1044,12 @@ func menu_grup_buat_grup(idxAkunDipakai int) {
 	fmt.Print("Tambahkan anggota grup (username): ")
 	fmt.Scan(&uname)
 	for searchAkunIdx(dataAkun, nDataAkun, uname) == -1 || uname == dataAkun[idxAkunDipakai].uname {
+		jumGagal++
+		if jumGagal > 3 {
+			clearScreen()
+			fmt.Println("Terlalu banyak percobaan gagal.")
+			return
+		}
 		fmt.Println("Username tidak valid, silahkan input kembali.")
 		fmt.Print("Tambahkan anggota grup (username): ")
 		fmt.Scan(&uname)
