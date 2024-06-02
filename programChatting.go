@@ -7,7 +7,7 @@ import (
 	"runtime"
 )
 
-const NMAX int = 20
+const NMAX int = 10
 
 type text struct {
 	textID      int
@@ -22,7 +22,7 @@ type chat struct {
 }
 
 type group struct {
-	memberUname [30]string
+	memberUname [NMAX]string
 	grupName    string
 	groupText   [NMAX]text
 	nMember, nGroupText, grupID int
@@ -419,6 +419,8 @@ func menu_utama() {
 	} else if input == "3" {
 		clearScreen()
 		menu_admin()
+	} else {
+		os.Exit(0)
 	}
 }
 
